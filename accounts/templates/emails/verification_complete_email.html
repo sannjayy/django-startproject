@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{email_subject}}</title>
+</head>
+<body>
+    <center>
+        <header>
+            <h3 class="text-center p-5">{{site.title}}</h3>
+        </header>
+        <main>
+            <p>Dear, {{user.full_name}}</p>
+            <p>{{message}}</p>
+
+            <h4>Congratulations! Your email address is verified now.</h4>
+            <a href="{{explore_site_url}}" class="btn btn-primary mt-5" target="_blank">Explore Now</a>
+            
+        </main>
+        <footer>
+            <p class="text-center">{{footer_text}}</p>
+        </footer>
+    </center>
+</body>
+</html>

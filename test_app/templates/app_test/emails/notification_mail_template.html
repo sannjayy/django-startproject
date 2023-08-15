@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{email_subject}}</title>
+</head>
+<body>
+    <center>
+        <header>
+            <h2 style="color:rgb(243, 36, 0)">ADMIN NOTIFICATION MAIL!</h2>
+            <small>Performed at: {% now "jS F Y H:i" %}</small>
+        </header>
+        <main>
+            <p>{{message}}</p>
+        </main>
+        <footer>            
+            <p class="text-center">{{footer_text}}</p>
+        </footer>
+    </center>
+</body>
+</html>

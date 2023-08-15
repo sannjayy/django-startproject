@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{email_subject}}</title>
+</head>
+<body>
+    <center>
+        <header>
+            <h2 style="color:rgb(243, 36, 0)">THIS IS A TEST MAIL!</h2>
+            <small>Performed at: {% now "jS F Y H:i" %}</small>
+        </header>
+        <main>
+            <p>{{message|upper}}</p>
+            {% comment %} <hr /> {% endcomment %}
+            <h3>Email Constants</h3>
+            <table class="table" border="1" width="500" style="margin-bottom:12px;">
+                <thead>
+                    <tr>
+                        <th>Attr</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Site Title</td>
+                        <td>{{site.title}}</td>
+                    </tr>
+                    <tr>
+                        <td>Site Domain</td>
+                        <td>{{site.domain}}</td>
+                    </tr>
+                    <tr>
+                        <td>Site Email</td>
+                        <td>{{site.email}}</td>
+                    </tr>
+                    <tr>
+                        <td>Site Phone</td>
+                        <td>{{site.phone}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% comment %} <hr /> {% endcomment %}
+            <h3>SMTP Config {% if smtp.is_enabled %} (Enabled) {% else %} (Disabled) {% endif %}</h3>
+            <table class="table" style="margin-bottom:12px;" border="1" width="500">
+                <thead>
+                    <tr>
+                        <th>Attr</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Host</td>
+                        <td>{{smtp.host}}</td>
+                    </tr>
+                    <tr>
+                        <td>Port</td>
+                        <td>{{smtp.port}}</td>
+                    </tr>
+                    <tr>
+                        <td>TLS</td>
+                        <td>{{smtp.tls}}</td>
+                    </tr>
+                    <tr>
+                        <td>User</td>
+                        <td>{{smtp.username}}</td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>{{smtp.password}}</td>
+                    </tr>
+                    <tr>
+                        <td>From Email</td>
+                        <td>{{smtp.from_email}}</td>
+                    </tr>
+                    <tr>
+                        <td>Backend</td>
+                        <td>{{smtp.backend}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Database Config {% if db.is_enabled %} (Enabled) {% else %} (Disabled) {% endif %}</h3>
+            <table class="table" style="margin-bottom:12px;" border="1" width="500">
+                <thead>
+                    <tr>
+                        <th>Attr</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Host</td>
+                        <td>{{db.host}}</td>
+                    </tr>
+                    <tr>
+                        <td>Port</td>
+                        <td>{{db.port}}</td>
+                    </tr>                    
+                    <tr>
+                        <td>Database Name</td>
+                        <td>{{db.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Database Username</td>
+                        <td>{{db.user}}</td>
+                    </tr>                    
+                </tbody>
+            </table>
+            {% comment %} <hr /> {% endcomment %}
+        </main>
+        <footer>            
+            <p class="text-center">{{footer_text}}</p>
+        </footer>
+    </center>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}sPanel : Super Panel{% endblock title %}
+    
+{% block content %}
+
+<div class='container mt-5'>
+    <div class='row gap-2'>
+        <div class='col-md-5 border border-2 border-danger p-3 rounded-2'>
+            <h3 class='display-6 text-danger'>Token Cleanup</h3>
+            <form method='post' class='mt-5'>
+                {% csrf_token %}
+                {% if user.is_superuser %}
+                    <div class="mb-3">
+                        <label class="form-label">Select Action Type</label>
+                        {{form.action}}
+                    </div>
+                    
+                    <button type='submit' class='btn btn-danger' onclick="return confirm('Warning! Are you sure?')">Perform Action</button>
+                {% else %}
+                    <code>You do not have permission to perform this action!</code>
+                {% endif %}
+            </form>
+        </div>
+
+        {% comment %} <div class='col-md-5 border border-2 border-primary p-3 rounded-2'>
+            <h3 class='display-6 text-primary'>Resync App Category</h3>
+            <form method='post' class='mt-5'>
+                {% csrf_token %}
+                {% if user.is_superuser %}
+                    <div class="mb-3">
+                        <label class="form-label">Select Action Type</label>
+                        <select name="action" class="form-control" placeholder="Select Action" required="" id="id_action">
+                            <option value="" selected="">-- SELECT A ACTION FROM THIS LIST -- </option>
+                          
+                            <option value="resync_all_app_category">Re-sync all app categories.</option>
+                            <option value="resync_missing_app_category">Re-sync missing app categories.</option>
+                          
+                        </select>
+                    </div>
+                    <button type='submit' class='btn btn-primary' onclick="return confirm('Are you sure? It may take a long while.')">Perform Action</button>
+                {% else %}
+                    <code>You do not have permission to perform this action!</code>
+                {% endif %}
+            </form>
+        </div> {% endcomment %}
+    </div>
+</div>
+
+
+{% endblock content %}
