@@ -57,10 +57,10 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     inlines = (UserProfileInline, UserOTPInline, UserCoordinateInline, SocialLoginInline)
     list_display = ('full_name', 'email', 'referral_id', 'created_at', 'updated_at',)
     list_filter = ('is_active', 'is_staff', 'is_superuser',)
-    readonly_fields = ('referral_code', 'gender', 'date_of_birth', 'device_info')
+    readonly_fields = ('referral_code', 'gender', 'date_of_birth', 'device_info', 'counts')
     list_display_links = ('full_name', 'email')
     fieldsets = (
-        ('Account Information', {'fields': ('full_name', 'gender', 'date_of_birth', 'referral_code', 'device_info')}),
+        ('Account Information', {'fields': ('full_name', 'gender', 'date_of_birth', 'referral_code', 'device_info', 'counts')}),
         ('User Credentials', {'fields': ('email', 'is_email_verified', 'mobile', 'is_mobile_verified','username', 'password',)}),
         
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',)}), # 'user_permissions', 'groups'

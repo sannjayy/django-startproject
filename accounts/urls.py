@@ -1,5 +1,5 @@
 from django.urls import path
-from accounts.views import LoginAPIView, SocialLogicAPIView, UserAccountView, RegisterAPIView, LogoutAPIView, LogoutAllAPIView, PasswordChangeAPIView, AccountUpdateAPIView, ResendVerifyEmailAPIView, VerifyEmailAPIView, SendOTPSMSAPIView, PasswordOTPResetAPIView, VerifyEmailOTPAPIView
+from accounts.views import LoginAPIView, OTPLoginAPIView, SocialLogicAPIView, UserAccountView, RegisterAPIView, LogoutAPIView, LogoutAllAPIView, PasswordChangeAPIView, AccountUpdateAPIView, ResendVerifyEmailAPIView, VerifyEmailAPIView, SendOTPSMSAPIView, PasswordOTPResetAPIView, VerifyEmailOTPAPIView
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 # /v1/{path}
@@ -8,6 +8,7 @@ urlpatterns = [
     path('users/me', UserAccountView.as_view(), name="account"),    
     path('users/login', LoginAPIView.as_view(), name='login'),
     path('users/login/social', SocialLogicAPIView.as_view(), name='social_login'),
+    path('users/login/otp', OTPLoginAPIView.as_view(), name='otp_login'),
 
     # path('users/token/verify', TokenVerifyView.as_view(), name="verify_token"),
     # path('users/token/refresh', TokenRefreshView.as_view(), name="refresh_token"),

@@ -89,15 +89,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         name = self.full_name or self.username
         return name.split(' ')[0].title()    
     
-    @property
-    def linked_accounts(self):        
-        linked_social_accounts = self.social_login.all()
-        return [account.provider for account in linked_social_accounts]
+    # @property
+    # def social_accounts(self):        
+    #     linked_social_accounts = self.linked_accounts.all()
+    #     print('linked_accounts', linked_social_accounts)
+    #     return [account.provider for account in linked_social_accounts]
     
-    @property
-    def profiles(self):   
-        user_profiles = self.user_profiles.all().filter(status=True)
-        return [{'id': profile.id, 'name': profile.name, 'is_primary': profile.is_primary, 'is_kid': profile.is_kid} for profile in user_profiles]
+    # @property
+    # def profiles(self):   
+    #     user_profiles = self.user_profiles.all().filter(status=True)
+    #     return [{'id': profile.id, 'name': profile.name, 'is_primary': profile.is_primary, 'is_kid': profile.is_kid} for profile in user_profiles]
 
 
 # USER OTP MODEL
@@ -131,8 +132,8 @@ SOCIAL_LOGIN_PROVIDERS = (
 )
 
 class SocialLogin(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_login')
-    provider = models.CharField(choices=SOCIAL_LOGIN_PROVIDERS, max_length=20)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='linked_accounts')
+    provider = models.CharField(choices=SOCIAL_LOGIN_PROVIDERS, max_length=20, default='google')
     token = models.CharField(max_length=255, unique=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -146,7 +147,7 @@ class SocialLogin(models.Model):
 
 # User Profile
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_profiles')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiles')
     name = models.CharField(max_length=50)
     is_primary = models.BooleanField(default=False)
     is_kid = models.BooleanField(default=False)

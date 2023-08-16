@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework import serializers
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
@@ -6,32 +7,32 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
-from .models import SocialLogin, SOCIAL_LOGIN_PROVIDERS
+from .models import SocialLogin, UserProfile, SOCIAL_LOGIN_PROVIDERS
 from .emails import AccountEmail
 
 # LOGIN SERIALIZER
 class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150, min_length=1)
-    tokens = serializers.SerializerMethodField()
-    linked_accounts = serializers.SerializerMethodField()
+    # tokens = serializers.SerializerMethodField()
+    # linked_accounts = serializers.SerializerMethodField()
     
-    def get_tokens(self, obj):
-        user = User.objects.get(username = obj['username'])
-        return {
-            'access': user.tokens()['access'],
-            'refresh': user.tokens()['refresh'],
-        }
+    # def get_tokens(self, obj):
+    #     user = User.objects.get(username = obj['username'])
+    #     return {
+    #         'access': user.tokens()['access'],
+    #         'refresh': user.tokens()['refresh'],
+    #     }
 
-    def get_linked_accounts(self, obj):
-        return obj['linked_accounts']
+    # def get_linked_accounts(self, obj):
+    #     return obj['linked_accounts']
     
-    def get_profiles(self, obj):
-        return obj['profiles']
+    # def get_profiles(self, obj):
+    #     return obj['profiles']
 
     class Meta:
         model = User
-        fields=['id', 'account_name', 'username', 'referral_id', 'gender', 'date_of_birth', 'email', 'referral_code',  'password', 'profiles', 'linked_accounts', 'tokens', 'last_login', 'device_info','created_at', 'updated_at']
-        read_only_fields = ('account_name', 'email', 'gender', 'date_of_birth', 'referral_code', 'last_login')
+        fields=['username', 'password', 'device_info']
+        
         extra_kwargs = {
             'password': {'write_only': True},
             'device_info': {'write_only': True},
@@ -73,9 +74,9 @@ class LoginSerializer(serializers.ModelSerializer):
             'created_at': user.created_at,
             'updated_at': user.updated_at,
             'last_login': user.last_login,
-            'profiles': user.profiles,
-            'linked_accounts': user.linked_accounts,
-            'tokens': user.tokens,
+            # 'profiles': user.profiles,
+            # 'linked_accounts': user.linked_accounts,
+            # 'tokens': user.tokens,
         }
 
 
@@ -96,23 +97,51 @@ class SocialAuthSerializer(serializers.Serializer):
         error_messages = {"social_token": {"required": "unique social token is required."}}
 
 
+# User Profile Serializer
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'name', 'is_primary', 'is_kid')
+
+
+# User Login Serializer
+class SocialLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialLogin
+        fields = ('id', 'provider')
+
+
+# AUTH SERIALIZER
+class AuthenticationSerializer(serializers.ModelSerializer):
+    linked_accounts = SocialLoginSerializer(read_only=True, many=True)
+    profiles = UserProfileSerializer(read_only=True, many=True)
+    tokens = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'account_name', 'username', 'mobile', 'is_mobile_verified', 'email', 'is_email_verified', 'gender',  'referral_id', 'date_of_birth', 'is_active', 'created_at', 'updated_at', 'last_login', 'profiles', 'linked_accounts', 'tokens')
+
+    def get_tokens(self, obj):
+        user = User.objects.get(username = obj.username)
+        return {
+            'access': user.tokens()['access'],
+            'refresh': user.tokens()['refresh'],
+        }
+    
+
 # USER REGISTER SERIALIZER
 class RegisterSerializer(serializers.ModelSerializer):
     gender = serializers.CharField(default='male')
     mobile = PhoneNumberField(required=False)
-    linked_accounts = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('id', 'full_name', 'email', 'mobile', 'referral_code', 'username', 'gender', 'device_info', 'password', 'linked_accounts',)
-        read_only_fields = ('username',)
+        fields = ('id', 'full_name', 'email', 'mobile', 'referral_code', 'gender', 'device_info', 'password', )
+        
         extra_kwargs = {
             "password": {'write_only': True},
             "device_info": {'write_only': True},
-        }     
-
-    def get_linked_accounts(self, obj):
-        return obj.linked_accounts
-
+        }    
 
     def create(self, validated_data):
         email = validated_data.get('email', None)

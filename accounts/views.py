@@ -17,8 +17,10 @@ from .permissions import IsUser
 from .utils import HandleUserCount
 from .models import SocialLogin
 from .emails import AccountEmail
-from .serializers import LoginSerializer, RegisterSerializer,  UserAccountSerializer, LogoutSerializer, AccountUpdateSerializer, PasswordChangeSerializer, VerifyEmailSerializer, SocialAuthSerializer, MobileSerializer, MobileOTPSerializer, ResetPasswordOTPSerializer, EmailOTPSerializer
+from .serializers import AuthenticationSerializer, LoginSerializer, RegisterSerializer,  UserAccountSerializer, LogoutSerializer, AccountUpdateSerializer, PasswordChangeSerializer, VerifyEmailSerializer, SocialAuthSerializer, MobileSerializer, MobileOTPSerializer, ResetPasswordOTPSerializer, EmailOTPSerializer
 User = get_user_model()
+
+ACCOUNTS_SWAGGER_TAG = 'Account Management'
 
 # USER ACCOUNT VIEW
 class UserAccountView(generics.GenericAPIView):
@@ -34,11 +36,13 @@ class UserAccountView(generics.GenericAPIView):
         return Response({'success': True, 'detail': 'success.', 'data': serializer.data}, status=status.HTTP_200_OK)
     
 
-# USERNAME & PASSWORD AUTHENTICATION VIEW
+# USERNAME & PASSWORD LOGIN VIEW
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    throttle_classes = [AnonRateThrottle]
-    @swagger_auto_schema(tags=['Account Management'])
+    # auth_serializer_class = AuthenticationSerializer
+    # throttle_classes = [AnonRateThrottle]
+
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         """Login With Username and Password"""
         serializer = self.serializer_class(data = request.data)
@@ -47,15 +51,49 @@ class LoginAPIView(generics.GenericAPIView):
             errors_list = [f"{key}: {value[0]}" for key, value in serializer.errors.items()]
             return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)
         
+        # username, password = serializer.data.get('username'), serializer.data.get('password')
+
+        # print(username, password)
+        # auth_user = self.auth_serializer_class(serializer.data)
         return Response( {'success': True, 'detail': 'Login success.', 'data':serializer.data}, status=status.HTTP_200_OK)
 
+
+# OTP Login View
+class OTPLoginAPIView(generics.GenericAPIView):
+    serializer_class = MobileOTPSerializer
+    auth_serializer_class = AuthenticationSerializer
+    
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+
+        if not serializer.is_valid(raise_exception=False):           
+            errors_list = [f"{key}: {value[0]}" for key, value in serializer.errors.items()]
+            return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)        
+        
+        mobile, user_otp, user = serializer.data.get('mobile'), serializer.data.get('otp'), ''
+
+        user = User.objects.filter(mobile=mobile).first()
+
+        if '+91' not in mobile and not user:
+            user = User.objects.filter(mobile=f"+91{mobile}").first()
+        
+        if user.otp.code == user_otp:
+            user.otp.regenerate()
+            auth_user = self.auth_serializer_class(user)
+
+            return Response({'success': True, 'data': auth_user.data}, status=status.HTTP_200_OK)
+        # FIXME: DELETE otp from here
+        return Response({'success': False, 'detail': "Invalid OTP.", "otp": user.otp.code}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
 
 # SOCIAL AUTHENTICATION / REGISTRATION VIEW
 class SocialLogicAPIView(generics.GenericAPIView):
     serializer_class = SocialAuthSerializer
-    user_serializer = LoginSerializer
+    auth_serializer_class = AuthenticationSerializer
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         '''Social Login / Register API View'''
         serializer = self.serializer_class(data = request.data)
@@ -68,13 +106,14 @@ class SocialLogicAPIView(generics.GenericAPIView):
 
     # Social Login Handle
     def get_values_from_serializer(self, serializer):
-        # sourcery skip: low-code-quality
         provider = serializer.validated_data.get('provider')
         social_token = serializer.validated_data.get('social_token')
         full_name = serializer.validated_data.get('full_name')
         device_info = serializer.validated_data.get('device_info')
         detail = ''
+
         if provider == 'email':
+            # Restricting Email Authentication
             return Response({'success': False, 'detail': 'Email login is not allowed.'}, status=status.HTTP_400_BAD_REQUEST)   
 
         if email := serializer.validated_data.get('email'):
@@ -85,96 +124,76 @@ class SocialLogicAPIView(generics.GenericAPIView):
                 user_obj.device_info = device_info
                 user_obj.save()
 
-            detail = 'Logged with social provider.'
-            if user_obj and provider not in user_obj.linked_accounts:
+            detail = f'Logged with {provider}.'
+
+            linked_provider_list = [account.provider for account in user_obj.linked_accounts.all()] if user_obj else None
+            if user_obj and provider not in linked_provider_list:
                 # Linking Social account to Existing Account
-                # print('Linked new provider')
-                if is_token_exits := SocialLogin.objects.filter(token=social_token).exists():
+                if _ := SocialLogin.objects.filter(token=social_token).exists():
                     # Check if token used on another account
                     return Response({'success': False, 'detail': 'Token already linked with another account.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 
                 # saving token to account
-                user_obj.social_login.create(
+                user_obj.linked_accounts.create(
                     user = user_obj,
                     token = social_token,
                     provider = provider
                 )
-                detail = 'Linked with new social provider.'
+                detail = f'Linked {provider} with your account.'
 
-            # 'Email Auth Part'
+            # 'New Social Auth Registration [Email]'
             if not user_obj:
-                # print('Create new user if not registered. ')
-                detail = 'New account registered with email.'
-                # Create new user with email if not registered.  
-                user_obj = User.objects.create_user(
-                    full_name=full_name or '',
-                    username=None,
-                    email=email or None,
-                    password='randompasword',
-                    is_email_verified=True,
-                )
-                SocialLogin.objects.create(
-                    user = user_obj,
-                    token = social_token,
-                    provider = provider
-                )
-                # Send Welcome Mail
-                AccountEmail().send_welcome_email(user_obj)
 
+                # Create new user with email if not registered.
+                detail = f'Account has been registered with {provider}.'
+                user_obj = self.create_user(full_name, email, provider, social_token)  
+
+                # Send Welcome Mail                
+                AccountEmail().send_welcome_email(user_obj)
 
         elif social_obj := SocialLogin.objects.filter(token=social_token).first():
             # print('Login with token')
-            detail = 'Loggged in with token.'
             # If no email but token matches
+            detail = f'Loggged in with {provider}.'
             user_obj = social_obj.user
         else:
-            # print('Register with token')
-            detail = 'Account registered with token.'
+            # 'New Social Auth Registration [Without Email] / using social_token'
+            detail = f'Account has been registered with {provider}.'
+
             # Register with token.
-            # email = random_string_generator()
-            user_obj = User.objects.create_user(
-                full_name=full_name or '',
-                username=None,
-                email=email,
-                mobile=None,
-                password=generate_random_password(),
-                is_email_verified=True,
-            )
-            SocialLogin.objects.create(
-                user = user_obj,
-                token = social_token,
-                provider = provider
-            )            
+            user_obj = self.create_user(full_name, email, provider, social_token)         
 
         # Validation Token and Provider
-        if not user_obj.social_login.filter(token=social_token, provider=provider):
-            return Response({'success': False, 'detail': 'Token is not valid.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = {
-            'id': user_obj.id,
-            'account_name': user_obj.account_name,
-            'email': user_obj.email,
-            'gender': user_obj.gender,
-            'date_of_birth': user_obj.date_of_birth,
-            'username': user_obj.username,
-            'referral_id': user_obj.referral_id,
-            'referral_code': user_obj.referral_code,
-            'linked_accounts': user_obj.linked_accounts,
-            'created_at': user_obj.created_at,
-            'updated_at': user_obj.updated_at,
-            'last_login': user_obj.last_login,
-            'tokens': user_obj.tokens,
-        }
-        user_serializer = self.user_serializer(user)
-        return Response( {'success': True, 'detail': detail, 'data':user_serializer.data}, status=status.HTTP_200_OK)
+        if not user_obj.linked_accounts.filter(token=social_token, provider=provider):
+            return Response({'success': False, 'detail': 'Token is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        auth_user = self.auth_serializer_class(user_obj)
+        return Response( {'success': True, 'detail': detail, 'data':auth_user.data}, status=status.HTTP_200_OK)
     
+    # Create new user
+    def create_user(self, full_name, email, provider, social_token):
+        user_obj = User.objects.create_user(
+            full_name=full_name or '',
+            username=None,
+            email=email or None,
+            mobile=None,
+            password=generate_random_password(),
+            is_email_verified=True,
+        )
+        SocialLogin.objects.create(
+            user = user_obj,
+            token = social_token,
+            provider = provider
+        )        
+        return user_obj
+        
 
 # USER REGISTRATION (PASSWORD) VIEW
 class RegisterAPIView(generics.GenericAPIView):
     serializer_class = RegisterSerializer  
+    auth_serializer_class = AuthenticationSerializer
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         """Account Registration with Email and Password"""
         data = request.data
@@ -188,8 +207,9 @@ class RegisterAPIView(generics.GenericAPIView):
             errors_list = [error[0] for error in serializer.errors.values()]
             return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer.save()
-        return Response({'success': True, 'detail': 'Registration success.', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+        user = serializer.save()
+        auth_user = self.auth_serializer_class(user)
+        return Response({'success': True, 'detail': 'Registration success.', 'data': auth_user.data}, status=status.HTTP_201_CREATED)
 
 
 # LOGOUT SINGLE DEVICE
@@ -197,7 +217,7 @@ class LogoutAPIView(generics.GenericAPIView):
     serializer_class = LogoutSerializer
     permission_classes = (IsAuthenticated,)
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -210,7 +230,7 @@ class LogoutAPIView(generics.GenericAPIView):
 class LogoutAllAPIView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         tokens = OutstandingToken.objects.filter(user_id=request.user.id)
         for token in tokens:
@@ -225,7 +245,7 @@ class AccountUpdateAPIView(generics.GenericAPIView):
     serializer_class = AccountUpdateSerializer
     throttle_classes = [UserRateThrottle]
     
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def patch(self, request, *args, **kwargs):
         instance = self.request.user
         serializer = self.get_serializer(instance, data=request.data, partial=True)
@@ -244,7 +264,7 @@ class PasswordChangeAPIView(generics.GenericAPIView):
     serializer_class = PasswordChangeSerializer
     throttle_classes = [UserRateThrottle]
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def patch(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.request.user
@@ -268,7 +288,7 @@ class ResendVerifyEmailAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsUser)
     throttle_classes = [UserRateThrottle]
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         user = request.user
         if not user.email:
@@ -291,7 +311,7 @@ class VerifyEmailAPIView(generics.GenericAPIView):
     throttle_classes = [AnonRateThrottle]
 
     token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description="Verification token", type=openapi.TYPE_STRING)
-    @swagger_auto_schema(manual_parameters=[token_param_config], operation_description="Verify e-mail address", tags=['Account Management'])
+    @swagger_auto_schema(manual_parameters=[token_param_config], operation_description="Verify e-mail address", tags=[ACCOUNTS_SWAGGER_TAG])
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -320,7 +340,7 @@ class VerifyEmailOTPAPIView(generics.GenericAPIView):
     serializer_class = EmailOTPSerializer
     throttle_classes = [AnonRateThrottle]
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -346,9 +366,10 @@ class SendOTPSMSAPIView(generics.GenericAPIView):
     serializer_class = MobileSerializer
     throttle_classes = [AnonRateThrottle]
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
+
         if not serializer.is_valid(raise_exception=False):           
             errors_list = [f"{key}: {value[0]}" for key, value in serializer.errors.items()]
             return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)
@@ -364,7 +385,7 @@ class SendOTPSMSAPIView(generics.GenericAPIView):
         if '+91' not in mobile and not user:
             user = User.objects.filter(mobile=f"+91{mobile}").first()
         if not user:
-            return Response({'success': False,'detail': 'Please contact customer care.'}, status=status.HTTP_404_NOT_FOUND)        
+            return Response({'success': False,'detail': 'Seems user not registered with us.'}, status=status.HTTP_404_NOT_FOUND)        
 
         if not user.is_active:
             return Response({'success': False,'detail': 'Account not activated. Please contact customer care.'}, status=status.HTTP_404_NOT_FOUND)        
@@ -391,7 +412,7 @@ class PasswordOTPResetAPIView(generics.GenericAPIView):
     serializer_class = ResetPasswordOTPSerializer
     permission_classes = (IsUser,)
 
-    @swagger_auto_schema(tags=['Account Management'])
+    @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if not serializer.is_valid(raise_exception=False):           
