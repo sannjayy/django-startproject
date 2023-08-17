@@ -1,4 +1,3 @@
-
 from django.core.validators import MinLengthValidator
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -9,7 +8,6 @@ from django.utils.text import slugify
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import random_code_generator
 from .manager import UserManager
-from django.db.models import Sum, Q
 
 # Primary User Model
 class User(AbstractBaseUser, PermissionsMixin):
@@ -118,6 +116,7 @@ SOCIAL_LOGIN_PROVIDERS = (
     ('email', 'email'),
     ('facebook', 'facebook'),
     ('google', 'google'),
+    ('apple', 'apple'),
 )
 
 class SocialLogin(models.Model):
@@ -146,6 +145,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"#{self.id} - {self.name}"
+
 
 # User Coordinates
 class UserCoordinate(models.Model):
