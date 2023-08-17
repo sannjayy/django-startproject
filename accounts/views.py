@@ -9,8 +9,7 @@ from django.shortcuts import get_object_or_404
 import jwt 
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
-
+from django.contrib import auth
 from utils import generate_random_password
 from utils.sms import SMSUtil
 from .permissions import IsUser
@@ -18,7 +17,7 @@ from .utils import HandleUserCount
 from .models import SocialLogin
 from .emails import AccountEmail
 from .serializers import AuthenticationSerializer, LoginSerializer, RegisterSerializer,  UserAccountSerializer, LogoutSerializer, AccountUpdateSerializer, PasswordChangeSerializer, VerifyEmailSerializer, SocialAuthSerializer, MobileSerializer, MobileOTPSerializer, ResetPasswordOTPSerializer, EmailOTPSerializer
-User = get_user_model()
+User = auth.get_user_model()
 
 ACCOUNTS_SWAGGER_TAG = 'Account Management'
 
@@ -39,23 +38,38 @@ class UserAccountView(generics.GenericAPIView):
 # USERNAME & PASSWORD LOGIN VIEW
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    # auth_serializer_class = AuthenticationSerializer
-    # throttle_classes = [AnonRateThrottle]
+    auth_serializer_class = AuthenticationSerializer
+    throttle_classes = [AnonRateThrottle]
 
     @swagger_auto_schema(tags=[ACCOUNTS_SWAGGER_TAG])
     def post(self, request):
         """Login With Username and Password"""
-        serializer = self.serializer_class(data = request.data)
+        serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid(raise_exception=False):
             errors_list = [f"{key}: {value[0]}" for key, value in serializer.errors.items()]
             return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)
         
-        # username, password = serializer.data.get('username'), serializer.data.get('password')
+        username, password, device_info = serializer.data.get('username'), serializer.data.get('password'), serializer.data.get('device_info')
+        
+        user = auth.authenticate(username=username, password=password)
 
-        # print(username, password)
-        # auth_user = self.auth_serializer_class(serializer.data)
-        return Response( {'success': True, 'detail': 'Login success.', 'data':serializer.data}, status=status.HTTP_200_OK)
+        # Saving Device info on Login
+        if user and device_info: 
+            user.device_info = device_info
+            user.save()
+        
+        if not user:
+            return Response( {'success': False, 'detail': 'Invalid credentials, try again.'}, status=status.HTTP_400_BAD_REQUEST)
+           
+        if not user.is_active:
+            return Response( {'success': False, 'detail': 'Account disabled, please contact admin.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # if not user.is_email_verified:
+        #     return Response( {'success': False, 'detail': 'User email is not verified.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        auth_user = self.auth_serializer_class(user)
+        return Response( {'success': True, 'detail': 'Login success.', 'data': auth_user.data}, status=status.HTTP_200_OK)
 
 
 # OTP Login View
@@ -81,7 +95,6 @@ class OTPLoginAPIView(generics.GenericAPIView):
         if user.otp.code == user_otp:
             user.otp.regenerate()
             auth_user = self.auth_serializer_class(user)
-
             return Response({'success': True, 'data': auth_user.data}, status=status.HTTP_200_OK)
         # FIXME: DELETE otp from here
         return Response({'success': False, 'detail': "Invalid OTP.", "otp": user.otp.code}, status=status.HTTP_400_BAD_REQUEST)
@@ -101,7 +114,7 @@ class SocialLogicAPIView(generics.GenericAPIView):
         if serializer.is_valid():
             return self.get_values_from_serializer(serializer)
 
-        errors_list = [error[0] for error in serializer.errors.values()]
+        errors_list = [f"{key}: {value[0]}" for key, value in serializer.errors.items()]
         return Response({'success': False, 'detail': errors_list[0]}, status=status.HTTP_400_BAD_REQUEST)    
 
     # Social Login Handle

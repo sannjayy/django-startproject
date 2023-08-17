@@ -89,17 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         name = self.full_name or self.username
         return name.split(' ')[0].title()    
     
-    # @property
-    # def social_accounts(self):        
-    #     linked_social_accounts = self.linked_accounts.all()
-    #     print('linked_accounts', linked_social_accounts)
-    #     return [account.provider for account in linked_social_accounts]
-    
-    # @property
-    # def profiles(self):   
-    #     user_profiles = self.user_profiles.all().filter(status=True)
-    #     return [{'id': profile.id, 'name': profile.name, 'is_primary': profile.is_primary, 'is_kid': profile.is_kid} for profile in user_profiles]
-
 
 # USER OTP MODEL
 class Otp(models.Model):

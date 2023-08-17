@@ -13,74 +13,12 @@ from .emails import AccountEmail
 # LOGIN SERIALIZER
 class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150, min_length=1)
-    # tokens = serializers.SerializerMethodField()
-    # linked_accounts = serializers.SerializerMethodField()
-    
-    # def get_tokens(self, obj):
-    #     user = User.objects.get(username = obj['username'])
-    #     return {
-    #         'access': user.tokens()['access'],
-    #         'refresh': user.tokens()['refresh'],
-    #     }
-
-    # def get_linked_accounts(self, obj):
-    #     return obj['linked_accounts']
-    
-    # def get_profiles(self, obj):
-    #     return obj['profiles']
-
     class Meta:
         model = User
         fields=['username', 'password', 'device_info']
         
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'device_info': {'write_only': True},
-        }
 
-    def validate(self, attrs):
-        username = attrs.get('username', '')
-        password = attrs.get('password', '')
-        device_info = attrs.get('device_info', None)
-
-        user = auth.authenticate(username=username, password=password)
-
-        # Saving Device info on Login
-        if user and device_info: 
-            user.device_info = device_info
-            user.save()
-        
-        if not user:
-            raise AuthenticationFailed('Invalid credentials, try again')
-            # raise serializers.ValidationError('Invalid credentials, try again.')
-
-        if not user.is_active:
-            raise AuthenticationFailed('Account disabled, please contact admin')
-            # raise serializers.ValidationError('Account disabled, please contact admin.')
-
-        # if not user.is_email_verified:
-        #     raise AuthenticationFailed('User email is not verified')
-            # raise serializers.ValidationError('User email is not verified.')
-    
-        return {
-            'id': user.id,
-            'account_name': user.account_name,
-            'email': user.email,
-            'gender': user.gender,
-            'date_of_birth': user.date_of_birth,
-            'username': user.username,
-            'referral_id': user.referral_id,
-            'referral_code': user.referral_code,
-            'created_at': user.created_at,
-            'updated_at': user.updated_at,
-            'last_login': user.last_login,
-            # 'profiles': user.profiles,
-            # 'linked_accounts': user.linked_accounts,
-            # 'tokens': user.tokens,
-        }
-
-
-# SOCIAL LOGIN SERIALIZER
+# SOCIAL LOGIN SERIALIZER 
 class SocialAuthSerializer(serializers.Serializer):
     provider = serializers.ChoiceField(choices=SOCIAL_LOGIN_PROVIDERS, write_only=True, error_messages={'required': 'provider is required.'})
     social_token = serializers.CharField(max_length=255, write_only=True, error_messages={'required': 'unique social token is required.'})
@@ -111,7 +49,7 @@ class SocialLoginSerializer(serializers.ModelSerializer):
         fields = ('id', 'provider')
 
 
-# AUTH SERIALIZER
+# AUTH SERIALIZER (Registration, Login, Social Login)
 class AuthenticationSerializer(serializers.ModelSerializer):
     linked_accounts = SocialLoginSerializer(read_only=True, many=True)
     profiles = UserProfileSerializer(read_only=True, many=True)
@@ -175,16 +113,12 @@ class RegisterSerializer(serializers.ModelSerializer):
   
 # USER ACCOUNT SERIALIZER
 class UserAccountSerializer(serializers.ModelSerializer):
-    linked_accounts = serializers.SerializerMethodField()
+    linked_accounts = SocialLoginSerializer(read_only=True, many=True)
+    profiles = UserProfileSerializer(read_only=True, many=True)
+
     class Meta:
         model = User
-        fields = ('id', 'account_name', 'username', 'mobile', 'is_mobile_verified', 'email', 'is_email_verified', 'gender',  'referral_id', 'date_of_birth', 'profiles','linked_accounts', 'referral_code', 'is_active', 'created_at', 'updated_at', 'last_login', )
-    
-    def get_linked_accounts(self, obj):
-        return obj.linked_accounts
-    
-    def get_profiles(self, obj):
-        return obj.profiles
+        fields = ('id', 'account_name', 'username', 'mobile', 'is_mobile_verified', 'email', 'is_email_verified', 'gender',  'referral_id', 'date_of_birth', 'is_active', 'created_at', 'updated_at', 'last_login', 'profiles', 'linked_accounts')
 
 
 
