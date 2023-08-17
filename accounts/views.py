@@ -100,7 +100,6 @@ class OTPLoginAPIView(generics.GenericAPIView):
         return Response({'success': False, 'detail': "Invalid OTP.", "otp": user.otp.code}, status=status.HTTP_400_BAD_REQUEST)
         
     
-
 # SOCIAL AUTHENTICATION / REGISTRATION VIEW
 class SocialLogicAPIView(generics.GenericAPIView):
     serializer_class = SocialAuthSerializer

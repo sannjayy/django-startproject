@@ -1,10 +1,7 @@
 from dataclasses import field
 from rest_framework import serializers
-from django.contrib import auth
-from rest_framework.exceptions import AuthenticationFailed
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import SocialLogin, UserProfile, SOCIAL_LOGIN_PROVIDERS
@@ -42,7 +39,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'is_primary', 'is_kid')
 
 
-# User Login Serializer
+#  Social Account Serializer
 class SocialLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLogin
@@ -66,6 +63,16 @@ class AuthenticationSerializer(serializers.ModelSerializer):
             'refresh': user.tokens()['refresh'],
         }
     
+
+# USER ACCOUNT SERIALIZER
+class UserAccountSerializer(serializers.ModelSerializer):
+    linked_accounts = SocialLoginSerializer(read_only=True, many=True)
+    profiles = UserProfileSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'account_name', 'username', 'mobile', 'is_mobile_verified', 'email', 'is_email_verified', 'gender',  'referral_id', 'date_of_birth', 'is_active', 'created_at', 'updated_at', 'last_login', 'profiles', 'linked_accounts')
+
 
 # USER REGISTER SERIALIZER
 class RegisterSerializer(serializers.ModelSerializer):
@@ -111,17 +118,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user    
 
   
-# USER ACCOUNT SERIALIZER
-class UserAccountSerializer(serializers.ModelSerializer):
-    linked_accounts = SocialLoginSerializer(read_only=True, many=True)
-    profiles = UserProfileSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = User
-        fields = ('id', 'account_name', 'username', 'mobile', 'is_mobile_verified', 'email', 'is_email_verified', 'gender',  'referral_id', 'date_of_birth', 'is_active', 'created_at', 'updated_at', 'last_login', 'profiles', 'linked_accounts')
-
-
-
 # LOGOUT SERIALIZER
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
