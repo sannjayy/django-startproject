@@ -1,5 +1,6 @@
 zenv/
-*/migrations/
+*/migrations/*
+!*/migrations/__init__.py
 */staticfiles/
 __pycache__/
 .vscode/
