@@ -7,12 +7,12 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(find_dotenv())
 
 # PRODUCTION SECRET!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY').partition("#")[0]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG_VALUE'] == 'True'
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(',') 
+ALLOWED_HOSTS = tuple(os.getenv('ALLOWED_HOSTS').partition("#")[0].strip().replace("'",""))
 
 # Application definition
 DEFAULT_APPS = [

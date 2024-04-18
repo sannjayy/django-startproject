@@ -2,7 +2,7 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import Group
-from .models import Otp, User, UserCoordinate, UserProfile
+from .models import Otp, User, UserProfile
 from .utils import HandleUserCount
 
 @receiver(post_save, sender=User)
@@ -18,9 +18,6 @@ def add_default_group(sender, instance, created, **kwargs):
 
     # Create First Empty Records for Account 
     UserProfile.objects.create(user=instance, name=instance.nickname, is_primary=True)  
-
-    # Create First Empty Records for User Coordinate 
-    UserCoordinate.objects.create(user=instance)           
 
     # Add Registered Users in Group
     if instance.is_superuser and instance.is_staff:

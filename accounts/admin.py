@@ -8,7 +8,7 @@ from django.contrib.auth.models import Permission, Group
 from import_export.admin import ImportExportModelAdmin
 from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
 
-from .models import Otp, User, SocialLogin, UserCoordinate, UserProfile
+from .models import Otp, User, SocialLogin, UserProfile
 from .forms import UserChangeForm, UserCreationForm
 from .resources import UsersResource
 
@@ -27,15 +27,7 @@ class UserProfileInline(admin.StackedInline):
     model = UserProfile
     extra = 0
     readonly_fields=('is_primary', 'is_kid', 'status',)
-    
-# User Coordinate Inline
-class UserCoordinateInline(admin.StackedInline):
-    model = UserCoordinate
-    readonly_fields=('latitude', 'longitude',)
-    extra = 0
-    
-    def has_delete_permission(self, request, obj=None):
-        return bool(request.user.is_superuser)
+  
 
 # Users OTP
 class UserOTPInline(admin.StackedInline):
@@ -54,7 +46,7 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
 
     # List admin
     resource_class = UsersResource
-    inlines = (UserProfileInline, UserOTPInline, UserCoordinateInline, SocialLoginInline)
+    inlines = (UserProfileInline, UserOTPInline, SocialLoginInline)
     list_display = ('full_name', 'email', 'referral_id', 'created_at', 'updated_at',)
     list_filter = ('is_active', 'is_staff', 'is_superuser',)
     readonly_fields = ('referral_code', 'gender', 'date_of_birth', 'device_info', 'counts')

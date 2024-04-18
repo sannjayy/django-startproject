@@ -5,7 +5,7 @@ zenv/
 __pycache__/
 .vscode/
 media/
-logs/
+logs/*
 Deploy
 .env
 db.sqlite3
