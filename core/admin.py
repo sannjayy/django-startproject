@@ -1,6 +1,6 @@
 from django.contrib import admin
-from project.settings.config import TEXT_TEMPLATES, PROJECT_SHORT_TITLE
-from utils import dotdict
+from project.config import TEXT_TEMPLATES, PROJECT_SHORT_TITLE
+from utils.functions import dotdict
 
 text = dotdict(TEXT_TEMPLATES.get('django_admin_panel'))
 

@@ -1,7 +1,6 @@
 from project.settings.base import BASE_DIR, SECRET_KEY
 import datetime
 
-
 # CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -17,19 +16,22 @@ REST_FRAMEWORK = {
 
     # Filter
     # "DEFAULT_FILTER_BACKENDS": ['django_filters.rest_framework.DjangoFilterBackend'],
+    
     'SEARCH_PARAM': 'q',
+    'EXCEPTION_HANDLER': 'utils.exceptionhandler.custom_exception_handler',
 
     # Throttle
     "DEFAULT_THROTTLE_RATES": {
-        'anon': '50/hour',
-        'user': '100/hour',
+        'anon': '500/hour',
+        'user': '1000/hour',
     }
 }
 
+
 # JWT SETTINGS
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=180),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=365),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
@@ -38,3 +40,7 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
 }
+
+
+# PRINT
+print('--> STAGING MODE <--')

@@ -11,5 +11,20 @@ SUPPORT_EMAIL = os.environ.get('SUPPORT_EMAIL')
 SUPPORT_PHONE = os.environ.get('SUPPORT_PHONE')
 
 # Admin Information
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'me@sanjaysikdar.dev')
 CURRENT_VERSION = os.environ.get('CURRENT_VERSION')
+
+
+# TEXT TEMPLATES
+TEXT_TEMPLATES = {
+    # ADMIN PANEL
+    'django_admin_panel': {
+        'header': '{} Admin',
+        'title': '{} Admin Portal',
+        'index_title': 'Welcome to {} Management',
+    },
+    # EMAIL DEFAULTS
+    'email': {
+        'email_footer_text': '{COMPANY_NAME} © {CURRENT_YEAR}. All Rights Reserved.',
+    }
+}

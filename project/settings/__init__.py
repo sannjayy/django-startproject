@@ -1,15 +1,11 @@
+import os
 from .base import *
-from .config.lib import *
 
-ENV_NAME = os.environ.get("ENV_NAME")
+ENV_NAME = os.environ.get("ENV_NAME", "dev")
+
 if ENV_NAME == 'prod':
-    print('--> PRODUCTION MODE <--')
-    from .prod import *        
-
+    from .prod import *
 elif ENV_NAME == 'stagging':
-    print('--> STAGING MODE <--')
     from .staging import *
-
 else:
-    print('--> DEV MODE <--')
     from .dev import *

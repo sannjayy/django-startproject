@@ -22,8 +22,10 @@ PyJWT==2.8.0
 python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
+setuptools==69.5.1
 sqlparse==0.5.0
 tablib==3.5.0
+tzdata==2024.1
 uritemplate==4.1.1
 whitenoise==6.6.0
 xlrd==2.0.1

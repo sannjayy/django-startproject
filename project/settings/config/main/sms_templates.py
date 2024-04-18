@@ -1,1 +1,0 @@
-OTP_SMS_TEMPLATE = 'Dear {username}, your one time password is {otp}. Do not share one-time password with anyone. Meghbela Broadband.'

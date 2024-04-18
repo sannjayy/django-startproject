@@ -1,5 +1,8 @@
-from .naming import PUBLIC_DOMAIN
+
 
 # PAGES CONFIGURATION
+from project.config import PUBLIC_DOMAIN
+
+
 ACCOUNT_VERIFICATION_SUCCESS_URL = f'{PUBLIC_DOMAIN}/account/verification/email'
 SITE_URL = f'{PUBLIC_DOMAIN}' 

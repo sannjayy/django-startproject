@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from project.settings.config import PROJECT_TITLE, PUBLIC_DOMAIN, ADMIN_EMAIL, CURRENT_VERSION, COMPANY_NAME
+from project.config import PROJECT_TITLE, PUBLIC_DOMAIN, ADMIN_EMAIL, CURRENT_VERSION, COMPANY_NAME
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from utils import CURRENT_YEAR
+from utils.functions import CURRENT_YEAR
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -21,13 +21,12 @@ schema_view = get_schema_view(
 )
 
 public_urls = [
-    path('v1/', include('accounts.urls')),
-    # path('apps/v1/', include('app_management.urls')),
-    # path('device/v1/', include('device_management.urls')),
+    # path('v1/', include('accounts.urls')),
     # path('core/v1/', include('core.urls')), 
 ]
 private_urls = [
     path('admin/', admin.site.urls),
+    # path('debug/', include('test_app.urls')),
 ]
 
 urlpatterns = public_urls + private_urls
@@ -41,5 +40,4 @@ if settings.ENV_NAME != 'prod':
         path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         path('swagger/api.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
         path('swagger/doc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-        path('', include('test_app.urls')),
     ]

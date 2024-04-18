@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission, Group
+from core.utils import import_export_formats
 from import_export.admin import ImportExportModelAdmin
 from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
 
@@ -40,6 +41,7 @@ class UserOTPInline(admin.StackedInline):
 
 
 # Primary User Admin
+@admin.register(User)
 class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
@@ -47,20 +49,20 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     # List admin
     resource_class = UsersResource
     inlines = (UserProfileInline, UserOTPInline, SocialLoginInline)
-    list_display = ('full_name', 'email', 'referral_id', 'created_at', 'updated_at',)
+    list_display = ('id', 'full_name', 'email', 'created_at', 'updated_at',)
     list_filter = ('is_active', 'is_staff', 'is_superuser',)
-    readonly_fields = ('referral_code', 'gender', 'date_of_birth', 'device_info', 'counts')
-    list_display_links = ('full_name', 'email')
+    readonly_fields = ('gender', 'date_of_birth', 'device_info', 'counts')
+    list_display_links = ('full_name', 'email', 'id')
     fieldsets = (
-        ('Account Information', {'fields': ('full_name', 'gender', 'date_of_birth', 'referral_code', 'device_info', 'counts')}),
+        ('Account Information', {'fields': ('full_name', 'gender', 'date_of_birth', 'device_info', 'counts')}),
         ('User Credentials', {'fields': ('email', 'is_email_verified', 'mobile', 'is_mobile_verified','username', 'password',)}),
         
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',)}), # 'user_permissions', 'groups'
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups')}), # 'user_permissions', 'groups'
     )
     # Creating new user from admin
     add_fieldsets = (
         ('User Information', {'classes': ('wide',), 'fields': ('full_name', 'email', 'mobile', 'password1', 'password2',)}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups')}),
         
     )
     search_fields = ('email', 'mobile', 'full_name', 'username')
@@ -69,12 +71,35 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     list_per_page = 17
 
 # User Admin Register
-admin.site.register(User, UserAdmin)
-admin.site.unregister(Group)
+# admin.site.unregister(Group)
 # admin.site.register(Permission)
 
 
 # admin.site.unregister(Permission)
+
+
+
+
+# GROUPS
+admin.site.unregister(Group)   
+@admin.register(Group)
+class GroupAdmin(ImportExportModelAdmin):
+    list_display = ( 'name', 'id',)
+    ordering = ('id',)
+    list_display_links = ( 'name', 'id',)
+    list_per_page = 30 
+    filter_vertical = ('permissions',)
+
+    def has_view_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_add_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_update_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_delete_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def get_export_formats(self):
+        return import_export_formats()
 
 
 # Token Blacklist 

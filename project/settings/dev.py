@@ -1,10 +1,8 @@
 from project.settings.base import BASE_DIR, SECRET_KEY
 import datetime
 
-
 # CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = True
-
 
 # DJANGO REST FRAMEWORK SETTINGS (Development)
 REST_FRAMEWORK = {
@@ -18,6 +16,7 @@ REST_FRAMEWORK = {
 
     # Filter
     # "DEFAULT_FILTER_BACKENDS": ['django_filters.rest_framework.DjangoFilterBackend'],
+    
     'SEARCH_PARAM': 'q',
     'EXCEPTION_HANDLER': 'utils.exceptionhandler.custom_exception_handler',
 
@@ -31,8 +30,8 @@ REST_FRAMEWORK = {
 
 # JWT SETTINGS
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=60),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=180),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=365),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
@@ -41,3 +40,6 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
 }
+
+# PRINT
+print('--> DEV MODE <--')

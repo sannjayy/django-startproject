@@ -1,7 +1,7 @@
 import datetime
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone 
-from project.settings.config import EMAIL_RESEND_ATTEMPT, EMAIL_RESEND_TIME, SMS_RESEND_ATTEMPT, SMS_RESEND_TIME
+from project.config import EMAIL_RESEND_ATTEMPT, EMAIL_RESEND_TIME, SMS_RESEND_ATTEMPT, SMS_RESEND_TIME
 from django.utils.http import urlsafe_base64_decode
 import string, random, secrets
 

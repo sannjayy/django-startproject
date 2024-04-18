@@ -1,5 +1,5 @@
-from ..main import TEXT_TEMPLATES, PROJECT_TITLE, PUBLIC_DOMAIN, SUPPORT_EMAIL, SUPPORT_PHONE, COMPANY_NAME
-from utils import dotdict, CURRENT_YEAR
+from project.config import TEXT_TEMPLATES, PROJECT_TITLE, PUBLIC_DOMAIN, SUPPORT_EMAIL, SUPPORT_PHONE, COMPANY_NAME
+from utils.functions import dotdict, CURRENT_YEAR
 
 # EMAIL & SMS CONFIG
 SMS_RESEND_ATTEMPT = 50 # How Many Times User Can Resend SMS
@@ -25,6 +25,3 @@ EMAIL_CONSTANTS = {
     },        
 	'footer_text': text.email_footer_text.format(COMPANY_NAME=COMPANY_NAME, CURRENT_YEAR=CURRENT_YEAR),
 }
-
-
-
