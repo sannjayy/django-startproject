@@ -4,6 +4,10 @@
             <li class='text-center fw-bold text-primary mt-3'>SERVICES ENABLED</li>
             <hr />
             
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'default' %}">
+                <span class="d-inline-block bg-success rounded-circle p-1"></span>
+                DEFAULTS
+            </a></li>
             <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'smtp' %}">
                 <span class="d-inline-block {% if env.ENABLE_SMTP == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 SMTP

@@ -40,6 +40,12 @@ class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.Temp
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['slug'] = self.kwargs.get('slug')
+        if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
+            from project.config import SIMPLE_JWT, REST_FRAMEWORK
+            context['drf'] = {
+                'SIMPLE_JWT': SIMPLE_JWT,
+                'REST_FRAMEWORK': REST_FRAMEWORK
+            }
         return context
 
    

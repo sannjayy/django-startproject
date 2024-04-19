@@ -1,4 +1,4 @@
-from project.settings.base import BASE_DIR
+from project.settings import BASE_DIR
 import os
 
 # DATABASE CONFIG
@@ -48,6 +48,7 @@ if ENABLE_MONGO_ENGINE:
     # Parse the MongoDB URI
     parsed_uri = urlparse(MONGODB_CONNECTION_STRING)
     # Extract host, username, password, and database name
+    protocol = parsed_uri.scheme
     host = parsed_uri.hostname
     port = parsed_uri.port
     username = parsed_uri.username

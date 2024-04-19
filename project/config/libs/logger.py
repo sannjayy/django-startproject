@@ -1,6 +1,6 @@
 
 import os
-from project.settings.base import BASE_DIR
+from project.settings import BASE_DIR
 
 # LOGGER 
 ENABLE_LOGGER = (os.environ.get('ENABLE_LOGGER') == 'True')
