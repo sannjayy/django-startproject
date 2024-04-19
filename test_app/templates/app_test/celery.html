@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Celery Tester{% endblock title %}
+
+{% block content %}
+
+<div class='container'>
+	
+
+    <div class='row'>
+		<div class='col-md-12'>
+            <form method='post'>
+                {% csrf_token %}
+                <button type='submit' class='btn btn-primary mb-3'>Perform Demo Task</button>
+                <a href="{% url 'test:delete_celery_task' %}" class='btn btn-outline-danger mb-3'>Clean Up</a>
+                
+                <a href="{% url 'test:celery' %}" class='btn btn-outline-dark mb-3'>Refresh Page</a>
+            </form>
+			<h3>Test Celery Tasks</h3>
+			{% if user.is_superuser %}
+                <table class="table table-striped mt-3">
+                    <tr>
+                        <th>Task</th>
+                        <th>Process</th>
+                        <th>Status</th>
+                        <th>Created at</th>
+                        <th>Updated at</th>
+                    </tr>
+                    {% for data in tasks %}
+                    <tr>
+                        <td>{{data.name}}</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{data.process}}%;" aria-valuenow="{{data.process}}" aria-valuemin="0" aria-valuemax="100">{{data.process}}%</div>
+                            </div>
+                        </td>
+                        <td>{% if data.is_completed %}Completed{% else %}Processing{% endif %}</td>
+                        <td>{{data.created_at}}</td>
+                        <td>{{data.updated_at|timesince}} ago</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
+			{% else %}
+				<code>You do not have permission!</code>
+			{% endif %}
+		</div>
+	</div>
+
+    
+</div>
+{% endblock content %}

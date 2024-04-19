@@ -1,15 +1,15 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
-# BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = Path(__file__).resolve().parents[2]
 
+BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(find_dotenv(), override=True) # Load Env
 
-# PRODUCTION SECRET!
-SECRET_KEY = os.getenv('SECRET_KEY').partition("#")[0]
+# PRIMARY SETUP!
+SECRET_KEY = os.environ.get('SECRET_KEY', 'jw+6n5-pxn-b0fuxjtxdn')
 DEBUG = os.environ['DEBUG_VALUE'] == 'True'
-ALLOWED_HOSTS = tuple(os.getenv('ALLOWED_HOSTS').partition("#")[0].strip().replace("'",""))
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS').split(',')]
+
 # Application definition
 DEFAULT_APPS = [
     'django.contrib.admin',
@@ -19,9 +19,11 @@ DEFAULT_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+# Add 'daphne' to default apps if USE_ASGI_MODE is True
+if os.environ['USE_ASGI_MODE'] == 'True':
+    DEFAULT_APPS.insert(0, "daphne") 
 
 THIRD_PARTY_APPS = [
-    # 'django_crontab',
     'corsheaders',
     'rest_framework', 
     'rest_framework_simplejwt.token_blacklist',
@@ -30,13 +32,19 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'django_cleanup.apps.CleanupConfig',
 ]
+# Add 'django_crontab' to default apps if ENABLE_CRON_JOBS is True
+if os.environ['ENABLE_CRON_JOBS'] == 'True':
+    DEFAULT_APPS.insert(0, "django_crontab") 
+
 LOCAL_APPS = [
     'core', 
     'accounts', 
-    # 'test_app',
-
 ]
+# Add 'test_app' to local apps if ENABLE_TEST_PANEL is True
+if os.environ['ENABLE_TEST_PANEL'] == 'True':
+    LOCAL_APPS.insert(0, "test_app")
 
+# Combine all lists to form INSTALLED_APPS
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
@@ -73,9 +81,8 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = 'accounts.User'
 ROOT_URLCONF = 'project.urls'
-WSGI_APPLICATION = 'project.wsgi.application'
 
-if os.environ['USE_ASGI_MODE'] == 'True':
+if os.environ.get('USE_ASGI_MODE') == 'True':
     ASGI_APPLICATION = 'project.asgi.application'
 else: 
     WSGI_APPLICATION = 'project.wsgi.application'

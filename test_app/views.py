@@ -1,9 +1,10 @@
-from unicodedata import category
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from utils.email import EmailUtil
 from .forms import EmailForm, ActionsListForm
-from utils import EmailUtil, dotdict
-from project.settings.config.lib import EMAIL_CONSTANTS
-from project.settings.config.main import ADMIN_EMAIL
+from utils.functions import dotdict
+from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL
+from random import randint
+
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -93,3 +94,29 @@ def SuperPanelActionsView(request):
             template_name='app_test/emails/notification_mail_template.html')
 
     return render(request, 'app_test/spanel.html', context={'form':form})
+
+
+
+
+@login_required(login_url='/admin/login/')
+def test_celery_view(request):
+    from test_app.models import CeleryTest
+    # celery_test_func.delay('sanjay')
+    if os.environ.get('ENABLE_CELERY') == 'True':
+        from test_app.task import celery_test_func
+
+        if request.method == 'POST':
+            celery_test_func.apply_async(args=[f'test_{randint(1, 99)}'])
+            messages.success(request, 'Action triggered try refreshing the page.')
+            return  redirect(request.META.get('HTTP_REFERER'))
+        tasks = CeleryTest.objects.all()
+        return render(request, 'app_test/celery.html', context={'tasks': tasks})
+    # return  redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='/admin/login/')
+def delete_celery_tasks(request):
+    from test_app.models import CeleryTest
+    CeleryTest.objects.all().delete()
+    messages.success(request, 'All task has been deleted.')
+    return redirect(request.META.get('HTTP_REFERER'))

@@ -1,6 +1,5 @@
 import os
 from .base import *
-
 ENV_NAME = os.environ.get("ENV_NAME", "dev")
 
 if ENV_NAME == 'prod':

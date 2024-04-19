@@ -7,6 +7,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from utils.functions import CURRENT_YEAR
+import os
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -28,6 +30,8 @@ private_urls = [
     path('admin/', admin.site.urls),
     # path('debug/', include('test_app.urls')),
 ]
+if os.environ['ENABLE_TEST_PANEL'] == 'True':
+    path('debug/', include('test_app.urls')),
 
 urlpatterns = public_urls + private_urls
 

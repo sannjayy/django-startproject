@@ -70,14 +70,16 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     filter_horizontal = ('groups',)
     list_per_page = 17
 
-# User Admin Register
-# admin.site.unregister(Group)
-# admin.site.register(Permission)
-
-
-# admin.site.unregister(Permission)
-
-
+    def has_view_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_add_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_update_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def has_delete_permission(self, request, obj=None):
+        return bool(request.user.is_superuser)
+    def get_export_formats(self):
+        return import_export_formats()
 
 
 # GROUPS
@@ -111,5 +113,6 @@ class OutstandingTokenAdmin(OutstandingTokenAdmin):
         super().__init__(*args, **kwargs)
     
         ordering = ("-created_at",)
+
     def has_delete_permission(self, *args, **kwargs):
-        return False # or whatever logic you want
+        return bool(self.request.user.is_superuser) # or whatever logic you want
