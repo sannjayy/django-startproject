@@ -5,10 +5,9 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.crypto import get_random_string
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.text import slugify
-from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import random_code_generator
 from .manager import UserManager
-
+import os
 # Primary User Model
 class User(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
@@ -72,11 +71,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
     
     def tokens(self):
-        refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+        if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(self)
+            return {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+        return None
 
     @property
     def account_name(self):

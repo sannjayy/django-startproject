@@ -1,8 +1,15 @@
 import os
 
+from .defaults import *
+from .libs.database import *
 from .info import *
 
-from .libs.database import *
+
+
+if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
+    from .cors import *
+    from .libs.drf import *
+
 from .libs.redis import *
 from .libs.smtp import *
 from .libs.sms import *

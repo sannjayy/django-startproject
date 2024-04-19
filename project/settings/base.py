@@ -23,18 +23,28 @@ DEFAULT_APPS = [
 if os.environ['USE_ASGI_MODE'] == 'True':
     DEFAULT_APPS.insert(0, "daphne") 
 
+
+
 THIRD_PARTY_APPS = [
     'corsheaders',
-    'rest_framework', 
-    'rest_framework_simplejwt.token_blacklist',
+    # 'rest_framework', 
+    # 'rest_framework_simplejwt.token_blacklist',
     'import_export',
-    'drf_yasg',
     'django_filters',
     'django_cleanup.apps.CleanupConfig',
 ]
 # Add 'django_crontab' to default apps if ENABLE_CRON_JOBS is True
 if os.environ['ENABLE_CRON_JOBS'] == 'True':
-    DEFAULT_APPS.insert(0, "django_crontab") 
+    THIRD_PARTY_APPS.insert(0, "django_crontab") 
+
+# Add 'rest_framework' to default apps if ENABLE_DRF is True
+if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
+    THIRD_PARTY_APPS.insert(2, "rest_framework") 
+    THIRD_PARTY_APPS.insert(3, "rest_framework_simplejwt.token_blacklist") 
+
+# Add 'drf_yasg' to default apps if ENABLE_SWAGGER is True
+if os.environ.get('ENABLE_SWAGGER', 'False').lower() == 'true':
+    THIRD_PARTY_APPS.insert(4, "drf_yasg") 
 
 LOCAL_APPS = [
     'core', 
@@ -70,6 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'project.context.global_context',
             ],
         },
     },
@@ -116,16 +127,17 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
 PHONENUMBER_DEFAULT_REGION = "IN"
 
-# SWAGGER SETTINGS
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer':{
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
+if os.environ.get('ENABLE_SWAGGER', 'False').lower() == 'true':
+    # SWAGGER SETTINGS
+    SWAGGER_SETTINGS = {
+        'SECURITY_DEFINITIONS': {
+            'Bearer':{
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'in': 'header',
+            }
         }
     }
-}
 
     
 # IMPORT CONFIG

@@ -16,7 +16,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'test:home' %}">Dev Mode</a>
+            <a class="navbar-brand" href="{% url 'test:home' %}">Test Mode</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -29,18 +29,22 @@
                     </li>
 
                     {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'test:email' %}">Email Test</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'test:spanel' %}">Quick Actions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:index' %}">Admin Panel</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'schema-swagger-ui' %}">Swagger</a>
-                    </li>
+                        {% if env.ENABLE_SMTP == 'True' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'test:email' %}">SMTP Test</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'test:spanel' %}">Quick Actions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}">Admin Panel</a>
+                        </li>
+                        {% if env.ENABLE_SWAGGER == 'True' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'schema-swagger-ui' %}">Swagger</a>
+                        </li>
+                        {% endif %}
                     {% endif %}
 
                 </ul>

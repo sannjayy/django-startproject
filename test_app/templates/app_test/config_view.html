@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{slug|upper}} Config{% endblock title %}
+    
+{% block content %}
+
+<h1 class='display-6 text-center text-danger mb-3'>Super Mode</h1>
+
+<div class='container'>
+
+    <div class=row>
+        
+        <div class='col-md-6 col-12'>
+            {% include 'app_test/components/home/service_enabled.html' %}
+        </div>
+        <div class='col-md-6 col-12'>
+            {% if slug == 'sms' %}
+                {% include 'app_test/components/credentials/sms.html' %}
+            {% elif slug == 'smtp' %}
+                {% include 'app_test/components/credentials/smtp.html' %}
+            {% elif slug == 'database' %}
+                {% include 'app_test/components/credentials/database.html' %}
+            {% elif slug == 'mongo' %}
+                {% include 'app_test/components/credentials/mongo.html' %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

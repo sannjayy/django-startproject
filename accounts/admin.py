@@ -7,8 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission, Group
 from core.utils import import_export_formats
 from import_export.admin import ImportExportModelAdmin
-from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
-
+import os
 from .models import Otp, User, SocialLogin, UserProfile
 from .forms import UserChangeForm, UserCreationForm
 from .resources import UsersResource
@@ -106,13 +105,15 @@ class GroupAdmin(ImportExportModelAdmin):
 
 # Token Blacklist 
 # class OutstandingTokenAdmin(token_blacklist.admin.BlacklistedTokenAdmin):
-
-class OutstandingTokenAdmin(OutstandingTokenAdmin):
-    ordering = OutstandingTokenAdmin.ordering = ("-created_at",) 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
     
-        ordering = ("-created_at",)
+    from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
+    class OutstandingTokenAdmin(OutstandingTokenAdmin):
+        ordering = OutstandingTokenAdmin.ordering = ("-created_at",) 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+        
+            ordering = ("-created_at",)
 
-    def has_delete_permission(self, *args, **kwargs):
-        return bool(self.request.user.is_superuser) # or whatever logic you want
+        def has_delete_permission(self, *args, **kwargs):
+            return bool(self.request.user.is_superuser) # or whatever logic you want

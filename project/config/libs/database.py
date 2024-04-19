@@ -42,9 +42,15 @@ ENABLE_MONGO_ENGINE = (os.environ.get('ENABLE_MONGO_ENGINE') == 'True')
 if ENABLE_MONGO_ENGINE:
     import mongoengine
     from urllib.parse import quote_plus
+    from urllib.parse import urlparse
+    MONGODB_CONNECTION_STRING = os.environ.get('MONGODB_CONNECTION_STRING')
 
-    MONGO_USERNAME = quote_plus(os.environ.get('MONGO_USERNAME'))
-    MONGO_PASSWORD = quote_plus(os.environ.get('MONGO_PASSWORD'))
-    MONGO_HOST = os.environ.get('MONGO_HOST_URI')
-    MONGO_HOST_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOST}'
-    mongoengine.connect(db=os.environ.get('MONGO_DB_NAME'), host=MONGO_HOST_URI)
+    # Parse the MongoDB URI
+    parsed_uri = urlparse(MONGODB_CONNECTION_STRING)
+    # Extract host, username, password, and database name
+    host = parsed_uri.hostname
+    port = parsed_uri.port
+    username = parsed_uri.username
+    password = parsed_uri.password
+    database_name = parsed_uri.path.strip('/')
+    mongoengine.connect(db=database_name, host=parsed_uri)

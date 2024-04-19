@@ -1,17 +1,70 @@
 from django.shortcuts import render, redirect
+from django.views import generic
 from utils.email import EmailUtil
 from .forms import EmailForm, ActionsListForm
 from utils.functions import dotdict
 from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL
 from random import randint
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+
 import os
 # Create your views here.
+
+
+
+class TestHomePageView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
+    template_name="app_test/home.html"
+    
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_superuser
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+
+class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
+    template_name = "app_test/config_view.html"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_superuser
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['slug'] = self.kwargs.get('slug')
+        return context
+
+   
+    
+class TestSystemInfoView(generic.TemplateView):
+    template_name="app_test/system.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        
+
+       
+        # context['testimonials'] = Testimonial.objects.filter(status=True).order_by('order')
+
+        return context
+
+
+
+
+
+
+
+
+
 
 @login_required
 def send_test_email_view(request):
@@ -36,19 +89,9 @@ def send_test_email_view(request):
                     'from_email': settings.DEFAULT_FROM_EMAIL,
                     'backend': settings.EMAIL_BACKEND,
                 },
-                'db': {
-                    'is_enabled': settings.ENABLE_DB,                    
-                    'host': os.environ.get('DB_HOST'),
-                    'port': os.environ.get('DB_PORT'),
-                    'name': os.environ.get('DB_NAME'),
-                    'user': os.environ.get('DB_USER'),
-                },
                 **EMAIL_CONSTANTS
-            },
-            template_name='app_test/emails/test_mail_template.html')
-
+            }, template_name='app_test/emails/test_mail_template.html')
         messages.success(request, 'Action triggered check your inbox.')
-
     return render(request, 'app_test/email.html', context={'form':form})
 
 
@@ -61,12 +104,14 @@ def SuperPanelActionsView(request):
         form = ActionsListForm(request.POST)
         action = request.POST.get('action')
         if action == 'BlacklistedToken':
+            from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
             tokens = BlacklistedToken.objects.all()
             for token in tokens:
                 token.delete()
             messages.success(request, 'Deleted All Blacklisted Tokens.')
 
         elif action == 'OutstandingToken':
+            from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
             tokens = OutstandingToken.objects.all()
             for token in tokens:
                 token.delete()            

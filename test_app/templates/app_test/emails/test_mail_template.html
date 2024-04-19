@@ -82,35 +82,7 @@
                     </tr>
                 </tbody>
             </table>
-            
-            <h3>Database Config {% if db.is_enabled %} (Enabled) {% else %} (Disabled) {% endif %}</h3>
-            <table class="table" style="margin-bottom:12px;" border="1" width="500">
-                <thead>
-                    <tr>
-                        <th>Attr</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Host</td>
-                        <td>{{db.host}}</td>
-                    </tr>
-                    <tr>
-                        <td>Port</td>
-                        <td>{{db.port}}</td>
-                    </tr>                    
-                    <tr>
-                        <td>Database Name</td>
-                        <td>{{db.name}}</td>
-                    </tr>
-                    <tr>
-                        <td>Database Username</td>
-                        <td>{{db.user}}</td>
-                    </tr>                    
-                </tbody>
-            </table>
-            {% comment %} <hr /> {% endcomment %}
+          
         </main>
         <footer>            
             <p class="text-center">{{footer_text}}</p>
