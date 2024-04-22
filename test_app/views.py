@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from utils.email import EmailUtil
 from .forms import EmailForm, ActionsListForm
-from utils.functions import dotdict
+from utils.functions import dotdict, format_datetime, string_to_datetime
 from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL, COMPANY_NAME
 from random import randint
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -40,14 +40,64 @@ class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.Temp
             from project.config import SIMPLE_JWT, REST_FRAMEWORK
             context['drf'] = {
                 'SIMPLE_JWT': SIMPLE_JWT,
-                'REST_FRAMEWORK': REST_FRAMEWORK
+                'REST_FRAMEWORK': REST_FRAMEWORK,
             }
+        if os.environ.get('ENABLE_CRON_JOBS', 'False').lower() == 'true':
+            from project.config import  CRONJOBS, ALLOW_PARALLEL_RUNS, DJANGO_CRON_CACHE
+           
+            context['cron'] = {
+                'CRONJOBS': CRONJOBS,
+                'ALLOW_PARALLEL_RUNS': ALLOW_PARALLEL_RUNS,
+                'DJANGO_CRON_CACHE': DJANGO_CRON_CACHE,
+            }
+
         return context
 
    
     
-class TestSystemInfoView(generic.TemplateView):
+class TestSystemInfoView(LoginRequiredMixin, generic.TemplateView):
     template_name="app_test/system.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        import datetime, shutil, psutil, pytz, platform
+        total, used, free = shutil.disk_usage("/")
+        def get_boottime():
+            last_reboot = psutil.boot_time()
+            tz = pytz.timezone('Asia/Kolkata')
+            time_obj= datetime.datetime.fromtimestamp(last_reboot)
+            return tz.localize(time_obj)
+        def get_public_ip():
+            import urllib.request
+            try:
+                with urllib.request.urlopen('https://api.ipify.org') as response:
+                    if response.status == 200:
+                        return response.read().decode('utf-8')
+                    else:
+                        return "Failed to retrieve IP address"
+            except Exception as e:
+                return f"Error: {e}"
+        
+       
+        
+        context['system'] = {
+            'storage': f'{used // (2**30)}GB / {total // (2**30)} GB, Free: {free // (2**30)} GB',
+            'last_boot': get_boottime(),
+            'cpu': psutil.cpu_percent(),
+            'ram': psutil.virtual_memory().percent,
+            'memory_total': round(psutil.virtual_memory().total/1000000000, 1),
+            'memory_available': round(psutil.virtual_memory().available * 100 / psutil.virtual_memory().total, 1),
+            'memory_available_gb': round(psutil.virtual_memory().available/1000000000, 1),
+            'ram_used_gb': round(psutil.virtual_memory()[3]/1000000000, 1),
+            'os': platform.system(),
+            'os_version':platform.version(),
+            'os_release':platform.release(),
+            'os_machine':platform.machine(),
+            'os_processor':platform.processor(),
+            'os_architecture':platform.architecture(),
+            'ip':get_public_ip(),
+        }
+
+        return context
 
 @login_required
 def send_test_email_view(request):

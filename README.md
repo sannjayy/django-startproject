@@ -1,6 +1,6 @@
 # django-startproject v1.0
 
-Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables.
+Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
 # How to Start?
 
@@ -31,7 +31,6 @@ ENABLE_CRON_JOBS = False # Enables Django Crontab // pip install django_crontab
 ENABLE_CELERY = False # enables the celery
 ENABLE_CELERY_BEAT = False # Enables the celery beat
 ENABLE_MONGO_ENGINE = False # Enables the MongoDB
-
 ```
 - Start Server
 
@@ -80,8 +79,29 @@ Apply the following changes to your `.env` file.
 
 ```python
 ENABLE_MONGO_ENGINE = True
-MONGODB_CONNECTION_STRING = 'mongodb://xxxxx:pass@ip:27017/db?authSource=admin'
+MONGODB_CONNECTION_STRING = 'mongodb://username:password@host:27017/db?authSource=admin'
 ```
+
+You can test the connection from `TEST_PANEL`.
+
+---
+
+## Enabling the ASGI Mode (WebSocket)
+
+To activate ASGI mode, enable `USE_ASGI_MODE=True` and install Django Channels:
+
+
+```bash
+pip install 'channels[daphne]'
+```
+
+Redis Channels layers are also required for this. To enable Redis, set `ENABLE_REDIS=True` and `REDIS_CHANNEL_LAYER=True`, and install Django Channels Channel Layers:
+
+```bash
+pip install channels-redis
+```
+
+You can test the socket connections from `TEST_PANEL`.
 
 ---
 
@@ -105,6 +125,8 @@ source zenv/Scripts/activate && celery -A project worker -l info -P eventlet
 celery -A project worker -l info
 ```
 
+You can test the celery tasks from `TEST_PANEL`.
+
 ## For Enabling Celery Beat
 
 Enable `ENABLE_CELERY_BEAT=True` and then install:
@@ -127,24 +149,6 @@ celery -A project beat -l info
 ```
 
 --- 
-
-## Enabling the ASGI Mode (WebSocket)
-
-To activate ASGI mode, enable `USE_ASGI_MODE=True` and install Django Channels:
-
-
-```bash
-pip install 'channels[daphne]'
-```
-
-Redis Channels layers are also required for this. To enable Redis, set `ENABLE_REDIS=True` and `REDIS_CHANNEL_LAYER=True`, and install Django Channels Channel Layers:
-
-```bash
-pip install channels-redis
-```
-
-
----
 ---
 
 - 🌏 [GitHub Repo](https://github.com/sannjayy/django-startproject) 

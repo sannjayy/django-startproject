@@ -2,10 +2,6 @@ from project.settings import BASE_DIR
 import os
 
 # DATABASE CONFIG
-import os
-
-from utils.mongo import get_mongo_connection_uri
-
 ENABLE_DB = os.environ.get('ENABLE_DB', 'False').lower() == 'true'
 DATABASE_TYPE = os.environ.get('DB_TYPE', 'sqlite').lower()
 DATABASE_CONFIGS = {
@@ -43,6 +39,7 @@ DATABASES = {
 ENABLE_MONGO_ENGINE = (os.environ.get('ENABLE_MONGO_ENGINE') == 'True')
 if ENABLE_MONGO_ENGINE:
     import mongoengine
+    from utils.mongo import get_mongo_connection_uri
     fetch_mongo = get_mongo_connection_uri()
     if fetch_mongo.get('success'):
         

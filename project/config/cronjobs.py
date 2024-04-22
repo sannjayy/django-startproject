@@ -4,5 +4,4 @@ DJANGO_CRON_CACHE = 'cron_cache'
 ALLOW_PARALLEL_RUNS = True
 
 CRONJOBS = [ 
-
 ]

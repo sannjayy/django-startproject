@@ -1,118 +1,77 @@
 {% extends 'test_base.html' %}
 
-{% block title %}Shortcuts{% endblock title %}
+{% block title %}System Information{% endblock title %}
     
 {% block content %}
 
 <h1 class='display-5'>System Information! </h1>
-
+<p class='display-6 fw-bold text-primary'>IP: {{system.ip}}</p>
 <p>{{company.project_title}} - {{company.name}} <span class="badge bg-primary">{{version}}</span></p>
 
-<div class="bg-light mt-2 text-dark mb-2">
-    <div class='d-flex justify-content-between'>
-        <div class="p-2 bg-info text-white"><span class='fw-bold'>CPU:</span> {{system.cpu}}%</div>
+<div class="bg-light mt-2 text-dark mb-2 rounded">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="p-3 bg-info text-white rounded-start">
+            <span class="fw-bold">CPU:</span> {{system.cpu}}%
+        </div>
         
-        <div class="p-2 bg-primary text-white"><span class='fw-bold'>RAM:</span>  {{system.ram}}%</div>
+        <div class="p-3 bg-primary text-white rounded-end">
+            <span class="fw-bold">RAM:</span>  {{system.ram}}%
+        </div>
     </div>
-    
-
-
-
 </div>
-<table class='table'>
-    <tr>
-        <td class='display-6'>Debug Mode:</td>
-        <td>{% if debug %} <span class="badge rounded-pill bg-dark">Enabled</span> {% else %} <span class="badge rounded-pill bg-success">Disabled</span>{% endif %}</td>
-
-        <td class='display-6'>Environment:</td>
-        <td>{% if env == 'prod' %} <span class="badge rounded-pill bg-success">Production</span> {% else %} <span class="badge rounded-pill bg-dark">{{env|title}}</span>{% endif %}</td>
-
-        <td class='display-6'>Database:</td>
-        <td>{% if db.status %} <span class="badge rounded-pill bg-success">Production</span> {% else %} <span class="badge rounded-pill bg-dark">Local</span>{% endif %}</td>
-    </tr>
-    <tr>
-        <td colspan='2'>
-            <p>
-                <span class='fw-bold'>Domain: </span> {{domain}}
-            </p>
-            <p>
-                <span class='fw-bold'>Allowed Hosts: </span> {{allowed_hosts}}
-            </p>
-            <p>
-                <span class='fw-bold'>CORS: </span> {{cors_hosts}}
-            </p>
-            <p>
-                <span class='fw-bold'>Logger:</span> {% if logger %} <span class="badge rounded-pill bg-success">Enabled</span> {% else %} <span class="badge rounded-pill bg-dark">Disabled</span>{% endif %}
-            </p>
-        </td>
-        <td colspan='2'>
-            <p>
-                <span class='fw-bold'>SMS Gateway:</span> {% if sms.status %} <span class="badge rounded-pill bg-success">Enabled</span> {% else %} <span class="badge rounded-pill bg-dark">Disabled</span>{% endif %}
-            </p>
-            <p>
-                <span class='fw-bold'>Email Gateway:</span> {% if email.status %} <span class="badge rounded-pill bg-success">Enabled</span> {% else %} <span class="badge rounded-pill bg-dark">Disabled</span>{% endif %}
-            </p>
-            <p>
-                <span class='fw-bold'>S3 Storage:</span> {% if s3.status %} <span class="badge rounded-pill bg-success">Enabled</span> {% else %} <span class="badge rounded-pill bg-dark">Disabled</span>{% endif %}
-                <br/>
-                <small>Bucket: <code>{{s3.bucket}}</code></small>
-                <br/>
-                <small>CDN: <code>{{s3.cdn_domain}}</code></small>
-            </p>
-        </td>
-        <td colspan='2'>
-            <p>
-                <span class='fw-bold'>DB Engine:</span> {{db.default.ENGINE}}
-            </p>
-               
-            <p> 
-                <span class='fw-bold'>DB Host:</span> {% if db.default.HOST %} {{db.default.HOST}} {% else %} Local {% endif %}
-                <br/>
-                <small>DB: <code>{{db.database_name}}</code></small>
-            </p>
+<div class="card">
+    <div class="card-body">
+        <ul class="list-group">
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
+                    <div class="fw-bold">OS</div>
+                    {{system.os}} {{system.os_release}} <br />
+                    <code>Version: {{system.os_version}}</code>
+                </div>                
+            </li>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
+                    <div class="fw-bold">Storage</div>
+                    <code>{{system.storage}}</code>
+                </div>                
+            </li>
             
-            <p>
-                <span class='fw-bold'>Redis:</span> {% if redis.status %} <span class="badge rounded-pill bg-success">Enabled</span> {% else %} <span class="badge rounded-pill bg-dark">Disabled</span>{% endif %}
-            </p>
-            
-        </td>
-    </tr>
-    <tr>
-        <td colspan='3'>
-            <p> 
-                <span class='fw-bold'>Storage:</span> 
-               {{system.storage}}
-            </p>
-            <p> 
-                <span class='fw-bold'>Last Boot:</span> 
-               {{system.last_boot}}
-            </p>
-            <p> 
-                <span class='fw-bold'>Ram Used:</span> 
-               {{system.ram_used_gb}} GB <span class='fw-bold'> Available:</span> 
-               {{system.memory_available}}%
-            </p>
-            <p> 
-                
-            </p>
-           
-        </td>
-        <td colspan='2'></td>
-        <td colspan='2'></td>
-    </tr>
-    <tr>
-        <td colspan='3'>
-            <p> 
-                <span class='fw-bold'>Cron Jobs:</span> 
-                <ol>
-                {% for values in crons  %}
-                    <li >{{values}}</li>
-                {% endfor %}
-                </ol>
-            </p>
-        </td>
-        <td colspan='2'></td>
-        <td colspan='2'></td>
-    </tr>
-</table>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
+                    <div class="fw-bold">Ram:</div>
+                    <code>{{system.ram_used_gb}} / {{system.memory_total}} GB - <span class='fw-bold text-success'> Available: {{system.memory_available}}% ({{system.memory_available_gb}} GB)</span>  </code>
+                </div>
+            </li>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
+                    <div class="fw-bold">Machine Info:</div>
+                    <code>{{system.os_processor}} - {{system.os_machine}} - {{system.os_architecture}}</code>
+                </div>
+            </li>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
+                    <div class="fw-bold">Boot Time</div>
+                    <code>{{system.last_boot}}</code>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // Refresh the page every second
+    setInterval(function() {
+        location.reload();
+    }, 2000); // 1000 milliseconds = 1 second
+</script>
 {% endblock content %}
