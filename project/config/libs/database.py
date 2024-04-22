@@ -4,6 +4,8 @@ import os
 # DATABASE CONFIG
 import os
 
+from utils.mongo import get_mongo_connection_uri
+
 ENABLE_DB = os.environ.get('ENABLE_DB', 'False').lower() == 'true'
 DATABASE_TYPE = os.environ.get('DB_TYPE', 'sqlite').lower()
 DATABASE_CONFIGS = {
@@ -41,29 +43,11 @@ DATABASES = {
 ENABLE_MONGO_ENGINE = (os.environ.get('ENABLE_MONGO_ENGINE') == 'True')
 if ENABLE_MONGO_ENGINE:
     import mongoengine
-    from urllib.parse import quote_plus, urlparse
-    MONGODB_CONNECTION_STRING = os.environ.get('MONGODB_CONNECTION_STRING')
-
-    # Parse the MongoDB URI
-    parsed_uri = urlparse(MONGODB_CONNECTION_STRING)
-
-    # Extract host, username, password, and database name
-    protocol = parsed_uri.scheme
-    host = parsed_uri.hostname
-    port = parsed_uri.port
-    username = parsed_uri.username
-    password = parsed_uri.password
-    database_name = parsed_uri.path.strip('/')
-    query_string = parsed_uri.query
-
-    # If IPv6 address is present, enclose it in '[' and ']'
-    if ':' in host and '[' not in host:
-        host = f'[{host}]'
-
-    # Construct a new connection string with properly escaped characters
-    escaped_uri = f"{protocol}://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/{database_name}?{query_string}" if query_string else f"{protocol}://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/{database_name}"
-    try:
-        # Connect to the MongoDB database using the updated connection string
-        mongoengine.connect(db=database_name, host=escaped_uri)
-    except mongoengine.connection.ConnectionFailure as e:
-        print(f"Cannot connect to database {database_name}: {e}")
+    fetch_mongo = get_mongo_connection_uri()
+    if fetch_mongo.get('success'):
+        
+        try:
+            # Connect to the MongoDB database using the updated connection string
+            mongoengine.connect(host=fetch_mongo.get('uri'))
+        except mongoengine.connection.ConnectionFailure as e:
+            print(f"Cannot connect to database {fetch_mongo.get('database_name')}: {e}")

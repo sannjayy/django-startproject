@@ -43,8 +43,29 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-
 ---
+
+## Enabling Database (PostgreSQL, MySQL, SQLite)
+
+To use **PostgreSQL**, set `DB_TYPE = 'PostgreSQL'` and `ENABLE_DB = True` make sure you have installed `psycopg2`:
+
+```bash
+# stand-alone package
+pip install psycopg2
+# OR binary package
+pip install psycopg2-binary
+```
+
+To use **MySQL**, set `DB_TYPE = 'MySQL'` and `ENABLE_DB = True` make sure you have installed `pymysql`:
+
+```bash
+pip install pymysql
+```
+
+To use **SQLite**, set `ENABLE_DB = False` 
+
+It will automatically use SQLite by default.
+
 ---
 
 ## Enabling the Mongo Engine

@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-# BASE_DIR = Path(__file__).resolve().parents[2]
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(find_dotenv(), override=True) # Load Env
 
@@ -139,7 +138,6 @@ if os.environ.get('ENABLE_SWAGGER', 'False').lower() == 'true':
             }
         }
     }
-
     
 # IMPORT CONFIG
 from .config import *

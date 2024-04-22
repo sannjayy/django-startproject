@@ -24,6 +24,10 @@
                 <span class="d-inline-block {% if env.ENABLE_MONGO_ENGINE == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 MONGO DB
             </a></li>
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'asgi' %}">
+                <span class="d-inline-block {% if env.USE_ASGI_MODE == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
+                ASGI MODE / SOCKET
+            </a></li> 
             <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'redis' %}">
                 <span class="d-inline-block {% if env.ENABLE_REDIS == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 REDIS
@@ -44,10 +48,7 @@
                 <span class="d-inline-block {% if env.ENABLE_CRON_JOBS == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 CRON JOBS
             </a></li>
-            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'asgi' %}">
-                <span class="d-inline-block {% if env.USE_ASGI_MODE == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
-                ASGI MODE / SOCKET
-            </a></li>                        
+                                   
             <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'celery' %}">
                 <span class="d-inline-block {% if env.ENABLE_CELERY == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 CELERY

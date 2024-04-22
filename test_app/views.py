@@ -3,7 +3,7 @@ from django.views import generic
 from utils.email import EmailUtil
 from .forms import EmailForm, ActionsListForm
 from utils.functions import dotdict
-from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL
+from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL, COMPANY_NAME
 from random import randint
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -179,10 +179,39 @@ def test_websocket_json_view(request):
 
 @login_required(login_url='/admin/login/')
 def test_mongo_view(request):
-   
-    if request.method == 'POST':
-        group_name = request.POST.get('group_name')
-        message = request.POST.get('message')
-        
-        messages.success(request, f'Pinged on {group_name}')
-    return render(request, 'app_test/mongo_test.html')
+    data = {}
+    try:
+        from mongoengine import get_connection, get_db, get_version
+        databases = get_connection().list_database_names()
+        collection_names = get_db().list_collection_names()
+        data = {
+            'success': True,
+            'detail': 'Connected to the database!',
+            'collections': collection_names,
+            'version': get_version(),
+            'databases': databases
+        }
+    except Exception as e:
+        data = {
+            'success': False,
+            'version': get_version(),
+            'error': str(e),
+            'detail': 'Not connected to the database!',
+            
+        }
+    
+    if request.method == 'POST' and data.get('success'):
+        # Save on Mongo Log When Connects
+        from test_app.document import TestLog
+        from utils.mongo import MongoEngineUtil
+        MongoEngineUtil().save(
+            TestLog,
+            company_code = COMPANY_NAME,
+            message = "Just a new Test!",
+            user = request.user.nickname,
+            data = {
+                "user": request.user.id,
+            }
+        )        
+        messages.success(request, 'Triggered the action!')
+    return render(request, 'app_test/mongo_test.html', context={'mongo': data})
