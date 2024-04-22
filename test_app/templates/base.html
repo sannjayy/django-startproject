@@ -59,6 +59,11 @@
                             <a class="nav-link" href="{% url 'test:celery' %}">Celery</a>
                         </li>
                         {% endif %}
+                        {% if env.ENABLE_MONGO_ENGINE == 'True' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'test:mongo_test' %}">Mongo</a>
+                        </li>
+                        {% endif %}
                     {% endif %}
 
                     {% if env.ENABLE_SWAGGER == 'True' %}

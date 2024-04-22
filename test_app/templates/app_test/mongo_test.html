@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Mongo DB Tester{% endblock title %}
+    
+{% block content %}
+
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-6 col-12'>
+            <h3 class='display-6'> SMTP Test</h3>
+            <form method='post' class='mt-3'>
+                {% csrf_token %}
+                {% if user.is_superuser %}
+                    <div class="mb-2">
+                        
+                        <label class="form-label">Email address:</label>
+                        {{form.email}}
+                    </div>
+                    
+                    <button type='submit' class='btn btn-primary'>Send Test Mail</button>
+                {% else %}
+                    <code>You do not have permission to send email!</code>
+                {% endif %}
+                    
+            </form>
+        </div>
+        <div class='col-md-6 col-12'>
+            {% include 'app_test/components/credentials/smtp.html' with hide_btn=True %}
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock content %}

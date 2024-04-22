@@ -41,12 +41,12 @@ DATABASES = {
 ENABLE_MONGO_ENGINE = (os.environ.get('ENABLE_MONGO_ENGINE') == 'True')
 if ENABLE_MONGO_ENGINE:
     import mongoengine
-    from urllib.parse import quote_plus
-    from urllib.parse import urlparse
+    from urllib.parse import quote_plus, urlparse
     MONGODB_CONNECTION_STRING = os.environ.get('MONGODB_CONNECTION_STRING')
 
     # Parse the MongoDB URI
     parsed_uri = urlparse(MONGODB_CONNECTION_STRING)
+
     # Extract host, username, password, and database name
     protocol = parsed_uri.scheme
     host = parsed_uri.hostname
@@ -54,4 +54,16 @@ if ENABLE_MONGO_ENGINE:
     username = parsed_uri.username
     password = parsed_uri.password
     database_name = parsed_uri.path.strip('/')
-    mongoengine.connect(db=database_name, host=parsed_uri)
+    query_string = parsed_uri.query
+
+    # If IPv6 address is present, enclose it in '[' and ']'
+    if ':' in host and '[' not in host:
+        host = f'[{host}]'
+
+    # Construct a new connection string with properly escaped characters
+    escaped_uri = f"{protocol}://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/{database_name}?{query_string}" if query_string else f"{protocol}://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/{database_name}"
+    try:
+        # Connect to the MongoDB database using the updated connection string
+        mongoengine.connect(db=database_name, host=escaped_uri)
+    except mongoengine.connection.ConnectionFailure as e:
+        print(f"Cannot connect to database {database_name}: {e}")

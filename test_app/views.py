@@ -174,3 +174,15 @@ def test_websocket_json_view(request):
     group_name = request.GET.get('token', 'TestGroup')
     user_name = request.GET.get('user', 'TestUser')
     return render(request, 'app_test/websocket_json.html', context={'group_name': group_name, 'user_name': user_name})
+
+
+
+@login_required(login_url='/admin/login/')
+def test_mongo_view(request):
+   
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        message = request.POST.get('message')
+        
+        messages.success(request, f'Pinged on {group_name}')
+    return render(request, 'app_test/mongo_test.html')

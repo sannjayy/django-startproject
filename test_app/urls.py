@@ -18,7 +18,6 @@ urlpatterns = [
 
 if os.environ.get('USE_ASGI_MODE') == 'True':
     from .views import  test_websocket_json_view, test_websocket_view
-
     urlpatterns += [
         path('websoccket/', test_websocket_view, name='websocket'),
         path('websoccket/json/', test_websocket_json_view, name='websocket_json'),
@@ -29,4 +28,10 @@ if os.environ.get('ENABLE_CELERY') == 'True':
     urlpatterns += [
         path('celery/', test_celery_view, name='celery'),
         path('celery/task/delete', delete_celery_tasks, name='delete_celery_task'),
+    ]
+
+if os.environ.get('ENABLE_MONGO_ENGINE') == 'True':
+    from .views import  test_mongo_view
+    urlpatterns += [
+        path('mongo/test/', test_mongo_view, name='mongo_test'),
     ]
