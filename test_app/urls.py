@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from .views import TestConfigDetailPage, TestHomePageView, TestSystemInfoView, send_test_email_view, SuperPanelActionsView
+from .views import TestConfigDetailPage, TestHomePageView, TestSystemInfoView, send_test_email_view, SuperPanelActionsView, test_websocket_json_view, test_websocket_view
 
 app_name = 'test'
 
@@ -12,4 +12,6 @@ urlpatterns = [
     path('test_email/', send_test_email_view, name='email'),
     path('quick/actions', SuperPanelActionsView, name='spanel'),
     path('config/<slug>/', TestConfigDetailPage.as_view(), name='config_detail'),
+    path('websoccket/', test_websocket_view, name='websocket'),
+    path('websoccket/json', test_websocket_json_view, name='websocket_json'),
 ]

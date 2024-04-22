@@ -171,3 +171,33 @@ def delete_celery_tasks(request):
     CeleryTest.objects.all().delete()
     messages.success(request, 'All task has been deleted.')
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+
+
+# Websocket Test
+@login_required(login_url='/admin/login/')
+def test_websocket_view(request):
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync, sync_to_async
+    
+    channel_layer = get_channel_layer()
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        message = request.POST.get('message')
+        async_to_sync(channel_layer.group_send)(
+            str(group_name), {
+                'type': 'send_notification',
+                'value': message
+            }
+        )
+        messages.success(request, f'Pinged on {group_name}')
+    return render(request, 'app_test/websocket.html')
+
+
+@login_required(login_url='/admin/login/')
+def test_websocket_json_view(request):
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync, sync_to_async
+    group_name = request.GET.get('token', '1605')
+    return render(request, 'app_test/websocket_json.html', context={'group_name': group_name})

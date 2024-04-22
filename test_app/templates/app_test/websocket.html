@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Websocket Test{% endblock title %}
+
+{% block content %}
+<style>
+    .console{
+        display: none;
+    }
+</style>
+<div class='container'>
+	<div class='row'>
+		<div class='col-md-12'>
+            
+			<h3 class='display-6'>Websocket Test </h3>
+			{% if user.is_superuser %}
+            <div class='col-2'>
+				<a href="javascript:WebSocketTest()" class='btn btn-danger mt-2 ping_block'>Connect Socket</a>
+				<a href="javascript:ClearScreen()" class='btn btn-secondary mt-2 console'>Clear Console</a>
+            </div>
+			{% else %}
+				<code>You do not have permission!</code>
+			{% endif %}
+		</div>
+		<div id="#logs" class="col-md-12 p-3 mb-2 bg-dark text-white rounded-1 mt-3 console">
+			<h5 class='text-center'>Console Window </h5>
+			<hr>
+		</div>
+	</div>
+
+    <div class='row ping_block'>
+		<div class='col-md-6 mt-5'>
+			<h3>Custom Ping</h3>
+			{% if user.is_superuser %}
+                <form method='post' target="_blank">
+                    {% csrf_token %}
+                    <input type='text' name='group_name' value='test_group' class='form-control' placeholder='Group Name / ID' required />
+                    <input type='text' name='message' value='Ping from Test Environment' class='form-control mt-2' placeholder='Your Message' required />
+                    <button type='submit' class='btn btn-secondary mt-2'>Ping to Group</button>
+                </form>
+				
+			{% else %}
+				<code>You do not have permission!</code>
+			{% endif %}
+		</div>
+	</div>
+	</div>
+</div>
+<script type="text/javascript">
+	const uniqId = 'User' + Math.floor(Math.random() * 100)
+    const ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+	document.getElementById("#logs").innerHTML += `<p class="text-secondary">User ID: <strong>${uniqId}</strong></p>`;
+
+    function ClearScreen() {
+        document.getElementById("#logs").innerHTML = `<h5 class='text-center'>Console Window</h5>`;
+	    document.getElementById("#logs").innerHTML += `<hr>`;
+        document.getElementById("#logs").innerHTML += `<p class="text-secondary">User ID: <strong>${uniqId}</strong></p>`;
+    }
+
+	function WebSocketTest() {
+        
+		if ("WebSocket" in window) {
+			//alert("WebSocket is supported by your Browser!");
+			// document.getElementById("#logs").innerHTML += `<p class="text-secondary">WebSocket is supported by your Browser!</p>`;
+			// Let us open a web socket
+			var ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws/connection/test");
+
+			ws.onopen = function () {
+				// Web Socket is connected, send data using send()				
+                document.querySelectorAll('.console').forEach(function(el) {
+                    el.style.display = 'block';
+                });
+                document.querySelectorAll('.ping_block').forEach(function(el) {
+                    el.style.display = 'none';
+                });
+				ws.send(`${uniqId} Joined!`);
+				//alert("Message is sent...");
+				document.getElementById("#logs").innerHTML += `<p><div class="badge bg-primary text-wrap" style="width: 6rem;">Connected</div> Request has sent...</p>`;
+			};
+
+			ws.onmessage = function (evt) {
+				const received_msg = evt.data;
+				document.getElementById("#logs").innerHTML += `<p><div class="badge bg-success text-wrap" style="width: 6rem;">Received</div> ${received_msg}</p>`;
+
+			};
+
+			ws.onclose = function () {
+				// websocket is closed.
+				document.getElementById("#logs").innerHTML += `<p><div class="badge bg-danger text-wrap" style="width: 6rem;">Closed</div> Connection has closed...</p>`;
+			};
+		} else {
+			// The browser doesn't support WebSocket
+			document.getElementById("#logs").innerHTML += `<p class="text-warning">WebSocket NOT supported by your Browser!</p>`;
+		}
+	}
+</script>
+
+{% endblock content %}
