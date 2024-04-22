@@ -24,12 +24,8 @@ DEFAULT_APPS = [
 if os.environ['USE_ASGI_MODE'] == 'True':
     DEFAULT_APPS.insert(0, "daphne") 
 
-
-
 THIRD_PARTY_APPS = [
     'corsheaders',
-    # 'rest_framework', 
-    # 'rest_framework_simplejwt.token_blacklist',
     'import_export',
     'django_filters',
     'django_cleanup.apps.CleanupConfig',
@@ -46,6 +42,10 @@ if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
 # Add 'drf_yasg' to default apps if ENABLE_SWAGGER is True
 if os.environ.get('ENABLE_SWAGGER', 'False').lower() == 'true':
     THIRD_PARTY_APPS.insert(4, "drf_yasg") 
+
+if (os.environ.get('ENABLE_CELERY_BEAT') == 'True'):
+    THIRD_PARTY_APPS.append("django_celery_results") 
+    THIRD_PARTY_APPS.append("django_celery_beat") 
 
 LOCAL_APPS = [
     'core', 

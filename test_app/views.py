@@ -129,8 +129,7 @@ def test_celery_view(request):
     from test_app.models import CeleryTest
     # celery_test_func.delay('sanjay')
     if os.environ.get('ENABLE_CELERY') == 'True':
-        from test_app.task import celery_test_func
-
+        from .tasks import celery_test_func
         if request.method == 'POST':
             celery_test_func.apply_async(args=[f'test_{randint(1, 99)}'])
             messages.success(request, 'Action triggered try refreshing the page.')

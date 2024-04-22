@@ -54,6 +54,11 @@
                             </ul>
                         </li>
                         {% endif %}
+                        {% if env.ENABLE_CELERY == 'True' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'test:celery' %}">Celery</a>
+                        </li>
+                        {% endif %}
                     {% endif %}
 
                     {% if env.ENABLE_SWAGGER == 'True' %}
