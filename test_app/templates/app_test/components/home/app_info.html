@@ -41,7 +41,7 @@
             >
                 <div class="me-auto">
                     <div class="fw-bold">LOGGER</div>
-                    It will write logs.
+                    It will write logs on <code>logs/app.log</code>.
                 </div>
                 <span class="badge {% if not env.ENABLE_LOGGER == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-pill">{% if not env.ENABLE_LOGGER == 'True' %}OFF{% else %}ON{% endif %}</span>
             </li>
