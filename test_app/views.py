@@ -11,10 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-
 import os
-# Create your views here.
-
 
 
 class TestHomePageView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
@@ -36,7 +33,6 @@ class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.Temp
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.is_superuser
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['slug'] = self.kwargs.get('slug')
@@ -52,25 +48,6 @@ class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.Temp
     
 class TestSystemInfoView(generic.TemplateView):
     template_name="app_test/system.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        
-
-       
-        # context['testimonials'] = Testimonial.objects.filter(status=True).order_by('order')
-
-        return context
-
-
-
-
-
-
-
-
-
 
 @login_required
 def send_test_email_view(request):
@@ -122,8 +99,6 @@ def SuperPanelActionsView(request):
             for token in tokens:
                 token.delete()            
             messages.success(request, 'Deleted All Outstanding Tokens.')
-        
-       
             
         # # MISSING CATEGORY APPS REFETCH
         # elif action == 'resync_missing_app_category':
@@ -175,7 +150,7 @@ def delete_celery_tasks(request):
 
 
 
-# Websocket Test
+# Websocket Test / ASGI
 @login_required(login_url='/admin/login/')
 def test_websocket_view(request):
     from channels.layers import get_channel_layer
@@ -194,10 +169,9 @@ def test_websocket_view(request):
         messages.success(request, f'Pinged on {group_name}')
     return render(request, 'app_test/websocket.html')
 
-
+# Websocket JSON Test / ASGI
 @login_required(login_url='/admin/login/')
 def test_websocket_json_view(request):
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync, sync_to_async
-    group_name = request.GET.get('token', '1605')
-    return render(request, 'app_test/websocket_json.html', context={'group_name': group_name})
+    group_name = request.GET.get('token', 'TestGroup')
+    user_name = request.GET.get('user', 'TestUser')
+    return render(request, 'app_test/websocket_json.html', context={'group_name': group_name, 'user_name': user_name})

@@ -24,3 +24,6 @@ if ENV_NAME == 'prod':
     SECURE_BROWSER_XSS_FILTER = True
     CSRF_TRUSTED_ORIGINS = [host.strip() for host in os.getenv('CORS_ALLOWED_ORIGINS').split(',')]
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    # When in Dev Mode
+    AUTH_PASSWORD_VALIDATORS = []

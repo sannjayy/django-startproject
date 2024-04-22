@@ -13,6 +13,7 @@
 		<div class='col-md-12'>
             
 			<h3 class='display-6'>Websocket Test </h3>
+            <p>Make sure you have enabled: <code>ENABLE_REDIS</code> and <code>REDIS_CHANNEL_LAYER</code>!</p>
 			{% if user.is_superuser %}
             <div class='col-2'>
 				<a href="javascript:WebSocketTest()" class='btn btn-danger mt-2 ping_block'>Connect Socket</a>

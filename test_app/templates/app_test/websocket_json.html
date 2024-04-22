@@ -23,7 +23,12 @@
                 </div>
                 <div>
                     <form action="{% url 'test:websocket_json' %}">
-                        <input type="text" class="form-control" placeholder='Group Name' name='token' value="{{group_name}}" />
+                        <div class="d-flex justify-content-end gap-2">
+                            <input type="text" class="form-control" placeholder='Group Name' name='token' value="{{group_name}}" />
+                            <input type="text" class="form-control" placeholder='User Name' name='user' value="{{user_name}}" />
+                        </div>
+
+                        
                     </form>
                 </div>
             </div>
@@ -55,16 +60,14 @@
 
 	function WebSocketTest() {
         const group_name = '{{group_name}}'
-        const username = '{{user.username}}'
+        const label = '{{user.account_name}}'
+        const username = '{{user_name}}'
 		if ("WebSocket" in window) {
 			//alert("WebSocket is supported by your Browser!");
 			// document.getElementById("#logs").innerHTML += `<p class="text-secondary">WebSocket is supported by your Browser!</p>`;
 			// Let us open a web socket
-            const socket_url = ws_scheme + "://" + window.location.host + "/ws/v1/coordinates" + "?Token="+group_name+"&User="+username+"&Source=django";
+            const socket_url = ws_scheme + "://" + window.location.host + "/ws/v1/coordinates" + "?Token="+group_name+"&User="+username+"&Source=django"+"&Label="+label;
             // console.log(socket_url)
-            
-			
-
             const ws = new WebSocket(socket_url);
 
 			ws.onopen = function () {

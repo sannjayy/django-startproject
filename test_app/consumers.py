@@ -1,5 +1,7 @@
+from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocketConsumer
+from urllib.parse import parse_qs
 from channels.exceptions import StopConsumer
-from channels.generic.websocket import AsyncWebsocketConsumer
+
 #  Created By Sanjay [ Znas Solutions ]
 
 async def send_message(self, msg, group='test_group'):
@@ -39,15 +41,6 @@ class ConnectionTestConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=payload)
 
 
-
-
-# from app_nav.document import LocationData
-from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocketConsumer
-from urllib.parse import parse_qs
-from channels.exceptions import StopConsumer
-import json
-
-# from utils.mongo import MongoEngineUtil
 class CoordinateShareConsumer(AsyncJsonWebsocketConsumer):
     
     async def connect(self):        
@@ -91,8 +84,6 @@ class CoordinateShareConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def disconnect(self, close_code):
-        # print('disconnect', self)
-        # print('disconnect', close_code)
         # await self.send_group_message(self, content={'status': 'Disconnected!'})
         
         # await self.channel_layer.group_discard(
