@@ -5,8 +5,7 @@
 
 ## Enabling Celery & Celery Beat
 
-To activate Celery, enable `ENABLE_CELERY=True` and make sure redis is working properly.
- run the following commands:
+To activate Celery, enable `ENABLE_CELERY=True` and make sure Redis is working properly. Run the following commands:
 
 ```bash
 pip install celery
@@ -14,17 +13,38 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-open a new instance of terminal and fun the following code:
+Open a new instance of terminal and run the following code:
 
 ```bash
-// Windows
+# Windows
 source zenv/Scripts/activate && celery -A project worker -l info -P eventlet 
 
-// Ubuntu | Mac
+# Ubuntu | Mac
 celery -A project worker -l info
 ```
 
+## For Enabling Celery Beat
 
+Enable `ENABLE_CELERY_BEAT=True` and then install:
+
+```bash
+pip install django-celery-beat
+pip install django-celery-results
+python manage.py makemigrations
+python manage.py migrate
+```
+
+Open a new instance of terminal and run the following code:
+
+```bash
+# Windows
+source zenv/Scripts/activate && celery -A project beat -l info  
+
+# Ubuntu | Mac
+celery -A project beat -l info
+```
+
+--- 
 
 ## Enabling the ASGI Mode (Web Socket)
 

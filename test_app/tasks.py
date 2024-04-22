@@ -12,6 +12,6 @@ def celery_test_func(task_name):
             obj.process = i*10
             obj.is_completed = i == 10
             obj.save()
-        time.sleep(1)
+        time.sleep(0.5)
     return "Done"
    
