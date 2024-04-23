@@ -1,6 +1,7 @@
 
 from project.config import ENABLE_SWAGGER
 import os
+from utils.boto3 import get_domain
 
 def global_context(request):
     # Define the keys for which you want to retrieve values
@@ -23,7 +24,8 @@ def global_context(request):
     # Retrieve values for each key
     for key in keys:
         values[key] = os.environ.get(key)
-        
+
+    values['AWS_S3_CUSTOM_DOMAIN'] = get_domain()
     return {
         'env': values
     }

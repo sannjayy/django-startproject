@@ -1,5 +1,14 @@
-import os, boto3
-from botocore.exceptions import NoCredentialsError
+import os
+
+
+def get_domain():
+    return os.environ.get('AWS_S3_CUSTOM_DOMAIN').lstrip('/').rstrip('/') if os.environ.get('AWS_S3_CUSTOM_DOMAIN', None) else f'{os.environ.get('AWS_S3_STORAGE_BUCKET_NAME')}.s3.{os.environ.get('AWS_S3_REGION_NAME')}.amazonaws.com'
+
+
+if os.environ.get('ENABLE_AWS_S3_STORAGE') == 'True':
+    import boto3
+    from botocore.exceptions import NoCredentialsError
+
 
 def upload_folder_to_s3(local_folder, s3_bucket, s3_prefix, aws_access_key_id, aws_secret_access_key, aws_session_token=None):
     # Create an S3 client
@@ -26,8 +35,7 @@ def upload_folder_to_s3(local_folder, s3_bucket, s3_prefix, aws_access_key_id, a
         return False
 
 
-def get_domain():
-    return os.environ.get('AWS_S3_CUSTOM_DOMAIN').lstrip('/').rstrip('/') if os.environ.get('AWS_S3_CUSTOM_DOMAIN') else f'{os.environ.get('AWS_S3_STORAGE_BUCKET_NAME')}.s3.{os.environ.get('AWS_S3_REGION_NAME')}.amazonaws.com'
+
 
 def s3_upload_file(source, destination, aws_access_key_id, aws_secret_access_key, region_name, bucket_name):
     s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key, region_name=region_name)
