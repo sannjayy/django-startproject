@@ -32,6 +32,12 @@
                 {% include 'app_test/components/credentials/storage.html' %}
             {% elif slug == 'crons' %}
                 {% include 'app_test/components/credentials/crons.html' %}
+            {% elif slug == 'asgi' %}
+                {% include 'app_test/components/credentials/asgi.html' %}
+            {% elif slug == 'celery' %}
+                {% include 'app_test/components/credentials/celery.html' %}
+            {% elif slug == 'swagger' %}
+                {% include 'app_test/components/credentials/swagger.html' %}
             {% endif %}
         </div>
     </div>

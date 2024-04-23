@@ -50,6 +50,16 @@ class TestConfigDetailPage(LoginRequiredMixin, UserPassesTestMixin, generic.Temp
                 'ALLOW_PARALLEL_RUNS': ALLOW_PARALLEL_RUNS,
                 'DJANGO_CRON_CACHE': DJANGO_CRON_CACHE,
             }
+        from core.routing import websocket_urlpatterns
+        context['asgi'] = {
+            'WEBSOCKET_URLPATTERNS': websocket_urlpatterns,
+        }
+        if os.environ.get('ENABLE_SWAGGER', 'False').lower() == 'true':
+            from project.urls import swagger_urls
+            context['swagger'] = {
+                'SWAGGER_URLS': swagger_urls,
+            }
+
 
         return context
 

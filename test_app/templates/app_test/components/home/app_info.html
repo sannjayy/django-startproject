@@ -31,6 +31,15 @@
                 class="list-group-item d-flex justify-content-between align-items-start"
             >
                 <div class="me-auto">
+                    <div class="fw-bold">SYS INFO</div>
+                    Disable before entering production mode.
+                </div>
+                <span class="badge {% if not env.ENABLE_SYSINFO == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-pill">{% if not env.ENABLE_SYSINFO == 'True' %}OFF{% else %}ON{% endif %}</span>
+            </li>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="me-auto">
                     <div class="fw-bold">ENVIRONMENT</div>
                     <small>Improved performance on the prod environment.</small>
                 </div>
