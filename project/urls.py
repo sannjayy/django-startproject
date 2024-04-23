@@ -3,7 +3,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from project.config import PROJECT_TITLE, PUBLIC_DOMAIN, ADMIN_EMAIL, CURRENT_VERSION, COMPANY_NAME, ENABLE_TEST_PANEL, ENABLE_SWAGGER
-from rest_framework import permissions
 from utils.functions import CURRENT_YEAR
 
 
@@ -26,6 +25,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 
 if ENABLE_SWAGGER:
+    from rest_framework import permissions
     from drf_yasg.views import get_schema_view
     from drf_yasg import openapi
     schema_view = get_schema_view(

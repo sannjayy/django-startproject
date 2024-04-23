@@ -1,5 +1,3 @@
-
-from project.config import ENABLE_SWAGGER
 import os
 from utils.boto3 import get_domain
 

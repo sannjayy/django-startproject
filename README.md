@@ -18,6 +18,11 @@ source zenv/bin/activate # Mac
 - Install basic requirements
 ```bash
 pip install -r requirements.txt
+
+# OR INITIAL INSTALLATION 
+pip install --upgrade pip
+pip install --upgrade setuptools
+pip install django "django-phonenumber-field[phonenumberslite]" django-import-export django-filter django-cleanup gunicorn whitenoise django-cors-headers python-dotenv
 ```
 
 - To create a .env file from the .env.Example file
