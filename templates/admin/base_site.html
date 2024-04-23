@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    {% if env.USE_ADMIN_LOGO == 'True' %}
+        <a href="{% url 'admin:index' %}"> <img src="{% static 'logo.png' %}" alt="{{site_header}}" title='{{site_header}}' style="max-height:40px"></a>
+    {% else %}
+        <a href="{% url 'admin:index' %}">{{ site_header|default:_('Znas administration') }}</a>
+    {% endif %}
+</div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

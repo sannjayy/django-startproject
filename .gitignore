@@ -6,7 +6,7 @@ __pycache__/
 .vscode/
 media/
 logs/*
-!/logs/app.log
+!/logs/test.log
 Deploy
 .env
 db.sqlite3

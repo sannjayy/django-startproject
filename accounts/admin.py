@@ -48,10 +48,10 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     # List admin
     resource_class = UsersResource
     inlines = (UserProfileInline, UserOTPInline, SocialLoginInline)
-    list_display = ('id', 'full_name', 'email', 'created_at', 'updated_at',)
+    list_display = ('id', 'username', 'full_name', 'email', 'mobile', 'created_at', 'updated_at',)
     list_filter = ('is_active', 'is_staff', 'is_superuser',)
     readonly_fields = ('gender', 'date_of_birth', 'device_info', 'counts')
-    list_display_links = ('full_name', 'email', 'id')
+    list_display_links = ('full_name', 'id', 'username')
     fieldsets = (
         ('Account Information', {'fields': ('full_name', 'gender', 'date_of_birth', 'device_info', 'counts')}),
         ('User Credentials', {'fields': ('email', 'is_email_verified', 'mobile', 'is_mobile_verified','username', 'password',)}),
@@ -85,7 +85,7 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
 admin.site.unregister(Group)   
 @admin.register(Group)
 class GroupAdmin(ImportExportModelAdmin):
-    list_display = ( 'name', 'id',)
+    list_display = ('id','name', 'permissions_count')
     ordering = ('id',)
     list_display_links = ( 'name', 'id',)
     list_per_page = 30 
@@ -101,6 +101,16 @@ class GroupAdmin(ImportExportModelAdmin):
         return bool(request.user.is_superuser)
     def get_export_formats(self):
         return import_export_formats()
+    
+    def permissions_count(self, obj):
+        # return obj.permissions.count()
+        return len(obj.permissions.all())
+    permissions_count.short_description = 'Total Permissions'
+
+# Changing the Group App Label
+from django.apps import apps
+apps.get_model('auth', 'Group')._meta.verbose_name_plural = 'User Groups'
+apps.get_model('auth', 'Group')._meta.app_label = 'accounts'
 
 
 # Token Blacklist 

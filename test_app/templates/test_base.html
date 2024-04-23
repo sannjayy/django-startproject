@@ -32,7 +32,9 @@
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="{% url 'test:home' %}">Home</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">Admin Panel</a>
+                    </li>
                     {% if user.is_superuser %}
                         {% if env.ENABLE_SMTP == 'True' %}
                         <li class="nav-item">
@@ -76,9 +78,26 @@
                         <a class="nav-link" href="{% url 'schema-swagger-ui' %}" target="_blank">Swagger</a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:index' %}" target="_blank">Admin Panel</a>
+                    
+                    {% if user.is_active and user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.nickname }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li disabled='true'><span class="text-center dropdown-item">{{ user.nickname }}</span></li>
+
+                            <li><a class="dropdown-item" href="{% url 'admin:password_change' %}">Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Log out</button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
+                    {% endif %}
 
                 </ul>
             </div>

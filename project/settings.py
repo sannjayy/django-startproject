@@ -49,7 +49,8 @@ if (os.environ.get('ENABLE_CELERY_BEAT') == 'True'):
 LOCAL_APPS = [
     'core', 
     'accounts', 
-]
+] # Add your apps here
+
 # Add 'test_app' to local apps if ENABLE_TEST_PANEL is True
 if os.environ['ENABLE_TEST_PANEL'] == 'True':
     LOCAL_APPS.insert(0, "test_app")
@@ -72,7 +73,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / 'templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
