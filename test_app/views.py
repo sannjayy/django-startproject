@@ -77,8 +77,6 @@ class TestSystemInfoView(LoginRequiredMixin, generic.TemplateView):
             except Exception as e:
                 return f"Error: {e}"
         
-       
-        
         context['system'] = {
             'storage': f'{used // (2**30)}GB / {total // (2**30)} GB, Free: {free // (2**30)} GB',
             'last_boot': get_boottime(),
@@ -265,3 +263,59 @@ def test_mongo_view(request):
         )        
         messages.success(request, 'Triggered the action!')
     return render(request, 'app_test/mongo_test.html', context={'mongo': data})
+
+
+@login_required(login_url='/admin/login/')
+def test_storage_view(request):
+    data = {}
+    if request.method == 'POST' and os.environ.get('ENABLE_AWS_S3_STORAGE') == 'True':
+        from utils.boto3 import s3_upload_file
+        import urllib.request
+
+        def validate_aws_s3_permission():
+            from utils.boto3 import check_s3_full_access
+            result = check_s3_full_access(os.environ.get('AWS_ACCESS_KEY_ID'), os.environ.get('AWS_SECRET_ACCESS_KEY'), os.environ.get('AWS_S3_REGION_NAME', 'ap-south-1'))
+            return result.get('success', False), result.get('detail', 'Somethings wents wrong!'), 
+    
+        def get_public_ip():
+            try:
+                with urllib.request.urlopen('https://api.ipify.org') as response:
+                    if response.status == 200:
+                        return response.read().decode('utf-8')
+                    else:
+                        return "Failed to retrieve IP address"
+            except Exception as e:
+                return f"Error: {e}"
+            
+        def write_log(message):
+            log_dir = 'logs'
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            
+            log_file = os.path.join(log_dir, 'storage.txt')
+            with open(log_file, 'a') as f:
+                f.write(message + '\n')
+                f.close()
+
+        success, detail = validate_aws_s3_permission()
+
+
+        # Write Log
+        write_log(f'VALIDATED FROM TEST PANEL: {format_datetime()}')
+        write_log(f'ACCESS_KEY: {os.environ.get('AWS_ACCESS_KEY_ID')} - BUCKET: {os.environ.get('AWS_S3_STORAGE_BUCKET_NAME')}')
+        write_log(f'DETAIL: {detail}')
+        write_log(f'VALIDATED BY: {request.user.nickname} - IP: {get_public_ip()}')
+        write_log('-----------------------------------')
+        
+        if success:
+            
+            upload_detail =  s3_upload_file(os.path.join('logs', 'storage.txt'), 'logs/storage_test.txt', os.environ.get('AWS_ACCESS_KEY_ID'), os.environ.get('AWS_SECRET_ACCESS_KEY'),  os.environ.get('AWS_S3_REGION_NAME', 'ap-south-1'), os.environ.get('AWS_S3_STORAGE_BUCKET_NAME'))
+        data = {
+            'success': success,
+            'upload_detail': upload_detail,
+            'error': detail,
+            'detail': detail,
+            
+        }        
+        messages.success(request, 'Triggered the action!')
+    return render(request, 'app_test/storage_test.html', context={'storage': data})

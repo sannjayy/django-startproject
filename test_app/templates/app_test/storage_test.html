@@ -1,0 +1,71 @@
+{% extends 'test_base.html' %}
+
+{% block title %}Storage Tester{% endblock title %}
+    
+{% block content %}
+
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-6 col-12'>
+            <h3 class='display-6'> Storage Test</h3>
+            {% if not storage.success %}
+            <p>To validate, you'll need the following permissions:
+                <ul>
+                    <li><code>iam:GetUser</code></li>
+                    <li><code>iam:ListAttachedUserPolicies</code></li>
+                    <li><code>iam::aws:policy/AmazonS3FullAccess</code></li>
+                </ul>
+            </p>
+            {% endif %}
+            
+            <code>{% if not storage.success %}{{storage.error}} {% endif %}</code>
+            <form method='post' class='mt-3'>
+                {% csrf_token %}
+                {% if user.is_superuser %}
+                    {% if not storage.success %}
+                    <button type='submit' class='btn btn-primary'>Validate Credentials</button>
+                    {% else %}
+                        <p class='{% if storage.upload_detail.success %}text-success {% else %}text-danger {% endif %} fw-bold'>{{storage.upload_detail.detail}}</p>
+                        <a href="https://{{storage.upload_detail.log_file}}" class='btn btn-dark' target="_blank" rel="noopener noreferrer">View Uploaded Log File</a>
+                    {% endif %}
+                    {% comment %} {{storage}} {% endcomment %}
+                {% else %}
+                    <code>You do not have permission!</code>
+                {% endif %}
+            </form>
+        </div>
+        <div class='col-md-6 col-12'>
+            {% include 'app_test/components/credentials/storage.html' with hide_btn=True data=data %}
+        </div>
+    </div>
+
+
+    <div class='row'>
+        <div class='col-12'>
+            <h6>How to fix permission?</h6>
+            <p class='fw-bold'>
+                <code>AWS Acoount</code> > <code>IAM</code> > <code>Users</code> > <code>[SELECT_USER]</code> > <code>Add permissions</code> > <code>Create inline policy</code> > <code>JSON</code>
+                <pre>
+                    {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Sid": "VisualEditor0",
+                                "Effect": "Allow",
+                                "Action": [
+                                    "iam:GetUser",
+                                    "iam:ListAttachedUserPolicies",
+                                    "s3:*"
+                                ],
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                </pre>    
+            </p>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

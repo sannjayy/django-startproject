@@ -37,3 +37,8 @@ if os.environ.get('ENABLE_SYSINFO') == 'True':
     urlpatterns += [
         path('sysinfo/', TestSystemInfoView.as_view(), name='system_info'),
     ]
+if os.environ.get('ENABLE_AWS_S3_STORAGE') == 'True':
+    from .views import test_storage_view
+    urlpatterns += [
+        path('storage/test/', test_storage_view, name='storage'),
+    ]
