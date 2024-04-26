@@ -2,11 +2,10 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from utils.email import EmailUtil
 from .forms import EmailForm, ActionsListForm
-from utils.functions import dotdict, format_datetime, string_to_datetime
+from utils.functions import dotdict, format_datetime
 from project.config import EMAIL_CONSTANTS, ADMIN_EMAIL, COMPANY_NAME
 from random import randint
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings

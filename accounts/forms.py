@@ -2,8 +2,6 @@ from django import forms
 from .models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.contrib.auth.forms import AuthenticationForm, UsernameField
-from django.utils.translation import gettext, gettext_lazy as _
 
 
 # Admin User Creation Form

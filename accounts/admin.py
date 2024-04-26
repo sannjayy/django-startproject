@@ -1,10 +1,9 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group as BaseGroup
 from core.utils import import_export_formats
 from import_export.admin import ImportExportModelAdmin
-from .models import Otp, User, SocialLogin, UserProfile
+from .models import Group, User, UserProfile, Otp, SocialLogin
 from .forms import UserChangeForm, UserCreationForm
 from .resources import UsersResource
 import os
@@ -79,7 +78,8 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
 
 
 # GROUPS
-admin.site.unregister(Group)   
+admin.site.unregister(BaseGroup) 
+
 @admin.register(Group)
 class GroupAdmin(ImportExportModelAdmin):
     list_display = ('id','name', 'permissions_count')
@@ -104,13 +104,7 @@ class GroupAdmin(ImportExportModelAdmin):
         return len(obj.permissions.all())
     permissions_count.short_description = 'Total Permissions'
 
-# Get the environment name from the environment variables, defaulting to 'dev' if not set
-ENV_NAME = os.environ.get("ENV_NAME", "dev")
-if ENV_NAME == 'prod':
-    # Changing the Group App Label
-    from django.apps import apps
-    apps.get_model('auth', 'Group')._meta.verbose_name_plural = 'User Groups'
-    apps.get_model('auth', 'Group')._meta.app_label = 'accounts'
+
 
 # Token Blacklist 
 # class OutstandingTokenAdmin(token_blacklist.admin.BlacklistedTokenAdmin):

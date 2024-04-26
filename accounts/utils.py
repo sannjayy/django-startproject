@@ -3,7 +3,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone 
 from project.config import EMAIL_RESEND_ATTEMPT, EMAIL_RESEND_TIME, SMS_RESEND_ATTEMPT, SMS_RESEND_TIME
 from django.utils.http import urlsafe_base64_decode
-import string, random, secrets
+import string, secrets
 
 # Age Calculate View
 def calculate_age(date):
@@ -147,10 +147,5 @@ def isBase64(uidb64):
 
 
 def random_code_generator(length):
-    # str1 = ''.join(random.choice(string.ascii_letters) for _ in range(letter_count)) + ''.join(random.choice(string.digits) for _ in range(digit_count))
-
-    # sam_list = list(str1) # it converts the string to list.  
-    # random.shuffle(sam_list) # It uses a random.shuffle() function to shuffle the string.  
-    # return ''.join(sam_list)
     return ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(length)) 
 

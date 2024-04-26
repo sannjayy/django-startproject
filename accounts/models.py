@@ -1,13 +1,21 @@
 from django.core.validators import MinLengthValidator
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import Group, AbstractBaseUser, PermissionsMixin
 from django.utils.crypto import get_random_string
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.text import slugify
 from .utils import random_code_generator
 from .manager import UserManager
 import os
+
+
+# Extend Django Auth Group 
+class Group(Group):
+    class Meta:
+        proxy = True
+        verbose_name_plural = 'User Groups'
+
 # Primary User Model
 class User(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
@@ -72,6 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def tokens(self):
         if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
+            # If DRF Enabled, return JWT Tokens
             from rest_framework_simplejwt.tokens import RefreshToken
             refresh = RefreshToken.for_user(self)
             return {
