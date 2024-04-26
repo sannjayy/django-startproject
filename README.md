@@ -3,6 +3,7 @@
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
 # How to Start?
+- Install [Python 3.12+](https://www.python.org/)
 
 - Clone or download [django-startproject](https://github.com/sannjayy/django-startproject) 
 

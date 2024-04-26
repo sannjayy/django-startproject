@@ -7,7 +7,7 @@ from utils.functions import CURRENT_YEAR
 
 
 public_urls = [
-    # path('v1/', include('accounts.urls')),
+    path('v1/', include('accounts.urls')),
     # path('core/v1/', include('core.urls')), 
 ]
 private_urls = [

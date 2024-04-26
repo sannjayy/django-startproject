@@ -7,8 +7,9 @@ from .info import *
 
 
 if os.environ.get('ENABLE_DRF', 'False').lower() == 'true':
-    from .cors import *
     from .libs.drf import *
+
+from .cors import *
 
 if (os.environ.get('ENABLE_CELERY') == 'True'):
     from .libs.celery import *

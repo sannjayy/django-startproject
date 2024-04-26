@@ -1,16 +1,13 @@
 from django.contrib import admin
-from django import forms
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import Permission, Group
+from django.contrib.auth.models import Group
 from core.utils import import_export_formats
 from import_export.admin import ImportExportModelAdmin
-import os
 from .models import Otp, User, SocialLogin, UserProfile
 from .forms import UserChangeForm, UserCreationForm
 from .resources import UsersResource
+import os
 
 # Users Social Login  
 class SocialLoginInline(admin.StackedInline):
@@ -107,11 +104,13 @@ class GroupAdmin(ImportExportModelAdmin):
         return len(obj.permissions.all())
     permissions_count.short_description = 'Total Permissions'
 
-# Changing the Group App Label
-from django.apps import apps
-apps.get_model('auth', 'Group')._meta.verbose_name_plural = 'User Groups'
-apps.get_model('auth', 'Group')._meta.app_label = 'accounts'
-
+# Get the environment name from the environment variables, defaulting to 'dev' if not set
+ENV_NAME = os.environ.get("ENV_NAME", "dev")
+if ENV_NAME == 'prod':
+    # Changing the Group App Label
+    from django.apps import apps
+    apps.get_model('auth', 'Group')._meta.verbose_name_plural = 'User Groups'
+    apps.get_model('auth', 'Group')._meta.app_label = 'accounts'
 
 # Token Blacklist 
 # class OutstandingTokenAdmin(token_blacklist.admin.BlacklistedTokenAdmin):
