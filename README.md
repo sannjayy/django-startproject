@@ -29,14 +29,16 @@ pip install django "django-phonenumber-field[phonenumberslite]" django-import-ex
 - To create a .env file from the .env.Example file
 
 ```python
-ENABLE_TEST_PANEL = True  # It will enable the testing panel (http://localhost:8000/test/admin).
-ENABLE_DRF = False # It will enable the django rest framework and simple-jwt.
-ENABLE_SWAGGER = False # It Enables Swagger-UI (drf-yasg)
-USE_ASGI_MODE = False # Need to enable the redis for django channels // pip install 'channels[daphne]'
-ENABLE_CRON_JOBS = False # Enables Django Crontab // pip install django_crontab
-ENABLE_CELERY = False # enables the celery
-ENABLE_CELERY_BEAT = False # Enables the celery beat
-ENABLE_MONGO_ENGINE = False # Enables the MongoDB
+ENABLE_TEST_PANEL = True  # It will enable the testing panel.
+ENABLE_SYSINFO = False  # It will enable the system info. || pip install psutil
+ENABLE_DRF = False # It will enable the django rest framework || pip install djangorestframework djangorestframework-simplejwt
+ENABLE_SWAGGER = False # It Enables Swagger-UI || pip install drf-yasg
+USE_ASGI_MODE = False # Need to enable the redis for django channels || pip install 'channels[daphne]'
+ENABLE_CRON_JOBS = False # Enables Django Crontab || pip install django_crontab
+ENABLE_CELERY = False # enables the celery || pip install celery
+ENABLE_CELERY_BEAT = False # Enables the celery beat || pip install django-celery-beat django-celery-results
+ENABLE_MONGO_ENGINE = False # pip install mongoengine
+ENABLE_AWS_S3_STORAGE = False # pip install django-storages boto3
 ```
 - Start Server
 
