@@ -36,13 +36,13 @@
                 <span class="d-inline-block {% if env.ENABLE_DRF == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 DRF / JWT
             </a></li>
-            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'storage' %}">
-                <span class="d-inline-block {% if env.ENABLE_AWS_S3_STORAGE == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
-                Storage (S3)
-            </a></li>
             <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'swagger' %}">
                 <span class="d-inline-block {% if env.ENABLE_SWAGGER == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
                 SWAGGER UI
+            </a></li>
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'storage' %}">
+                <span class="d-inline-block {% if env.ENABLE_AWS_S3_STORAGE == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
+                Storage (S3)
             </a></li>
             <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{% url 'test:config_detail' 'crons' %}">
                 <span class="d-inline-block {% if env.ENABLE_CRON_JOBS == 'True' %}bg-success{% else %}bg-danger{% endif %} rounded-circle p-1"></span>
