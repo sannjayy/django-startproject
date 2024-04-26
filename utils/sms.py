@@ -1,4 +1,4 @@
-from project.settings.config import ENABLE_SMS_GATEWAY, SMS_GATEWAY_API_KEY, SMS_GATEWAY_HOST, SMS_GATEWAY_SENDER_ID
+from project.config import ENABLE_SMS_GATEWAY, SMS_GATEWAY_API_KEY, SMS_GATEWAY_HOST, SMS_GATEWAY_SENDER_ID
 import requests, json, threading, urllib.parse
 
 

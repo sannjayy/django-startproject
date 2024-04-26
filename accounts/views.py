@@ -3,15 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status, generics, views
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
-# from drf_yasg.utils import swagger_auto_schema
-# from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.shortcuts import get_object_or_404
 import jwt 
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 from django.contrib import auth
 from utils.functions import generate_random_password
-from utils.sms import SMSUtil
 from .permissions import IsUser
 from .utils import HandleUserCount
 from .models import SocialLogin
