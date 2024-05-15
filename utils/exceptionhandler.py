@@ -17,7 +17,10 @@ def custom_exception_handler(exc, context):
             response.data = {'is_logged_in':False, 'status_code': 200}
             return response
 
-        response.data['success'] = response.status_code in [200, 201]
+        try:
+            response.data['success'] = response.status_code in [200, 201]
+        except Exception as e:
+            print(e)
 
     exception_class = exc.__class__.__name__
 
