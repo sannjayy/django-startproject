@@ -1,5 +1,5 @@
 # django-startproject v1.0.1
-![Demo](https://d1imkqddqdhyaw.cloudfront.net/assets/django-startproject/demo-1.png)
+![Demo](https://cdn.sanjaysikdar.dev/assets/django-startproject/demo-1.png)
 
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
