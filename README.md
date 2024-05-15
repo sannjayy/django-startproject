@@ -156,6 +156,7 @@ source zenv/Scripts/activate && celery -A project beat -l info
 celery -A project beat -l info
 ```
 
+### How to Deploy? : [https://read.sanjaysikdar.dev/deploy-django-django-rest-framework-on-ubuntu-2204-2404](https://read.sanjaysikdar.dev/deploy-django-django-rest-framework-on-ubuntu-2204-2404)
 --- 
 ---
 
