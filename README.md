@@ -1,4 +1,4 @@
-# django-startproject v1.0
+# django-startproject v1.0.1
 
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
@@ -66,8 +66,10 @@ pip install psycopg2-binary
 To use **MySQL**, set `DB_TYPE = 'MySQL'` and `ENABLE_DB = True` make sure you have installed `pymysql`:
 
 ```bash
-pip install pymysql
+pip install mysqlclient
 ```
+
+Help: [Installing mysqlclient on Ubuntu 22.04 / 24.04](https://read.sanjaysikdar.dev/installing-mysqlclient-on-ubuntu-2204-2404)
 
 To use **SQLite**, set `ENABLE_DB = False` 
 
