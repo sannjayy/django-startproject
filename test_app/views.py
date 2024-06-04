@@ -321,7 +321,7 @@ def test_storage_view(request):
             upload_detail =  s3_upload_file(os.path.join('logs', 'storage.txt'), 'logs/storage_test.txt', os.environ.get('AWS_ACCESS_KEY_ID'), os.environ.get('AWS_SECRET_ACCESS_KEY'),  os.environ.get('AWS_S3_REGION_NAME', 'ap-south-1'), os.environ.get('AWS_S3_STORAGE_BUCKET_NAME'))
         data = {
             'success': success,
-            'upload_detail': upload_detail,
+            'upload_detail': upload_detail if success else None,
             'error': detail,
             'detail': detail,
             
