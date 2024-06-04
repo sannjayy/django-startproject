@@ -17,8 +17,19 @@ if ENABLE_AWS_S3_STORAGE:
     AWS_DEFAULT_ACL = None
     AWS_S3_VERIFY = True
     AWS_S3_CUSTOM_DOMAIN = get_domain()
-    DEFAULT_FILE_STORAGE = 'project.storages.MediaStorage'
-    STATICFILES_STORAGE = 'project.storages.StaticStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "location": f'{DEFAULT_FILE_UPLOAD_DIR}media'
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "location": f'{DEFAULT_FILE_UPLOAD_DIR}static'
+            }
+    },
     SECURE_REFERRER_POLICY = 'same-origin'
 
     # S3 Storage Configurations
