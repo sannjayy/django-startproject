@@ -43,26 +43,24 @@
     <div class='row'>
         <div class='col-12'>
             <h6>How to fix permission?</h6>
-            <p class='fw-bold'>
-                <code>AWS Acoount</code> > <code>IAM</code> > <code>Users</code> > <code>[SELECT_USER]</code> > <code>Add permissions</code> > <code>Create inline policy</code> > <code>JSON</code>
-                <pre>
-                    {
-                        "Version": "2012-10-17",
-                        "Statement": [
-                            {
-                                "Sid": "VisualEditor0",
-                                "Effect": "Allow",
-                                "Action": [
-                                    "iam:GetUser",
-                                    "iam:ListAttachedUserPolicies",
-                                    "s3:*"
-                                ],
-                                "Resource": "*"
-                            }
-                        ]
-                    }
-                </pre>    
-            </p>
+            <code>1. AWS Acoount</code> > <code>IAM</code> > <code>Users</code> > <code>[SELECT_USER]</code> > <code>Add permissions</code> > <code>Create inline policy</code> > <code>JSON</code>
+            <pre>
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "iam:GetUser",
+                                "iam:ListAttachedUserPolicies"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            </pre>    
+            <code>2. AWS Acoount</code> > <code>IAM</code> > <code>Users</code> > <code>[SELECT_USER]</code> > <code>Add permissions</code> > <code>Add permissions</code> > <code>Attach policies directly</code> > <code><strong>AmazonS3FullAccess</strong></code>
+            <pre>Add Permission</pre>
         </div>
     </div>
 </div>
