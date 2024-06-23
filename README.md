@@ -3,6 +3,16 @@
 
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
+# Getting Started 
+
+Clone the repo
+
+```bash
+git clone git@github.com:sannjayy/django-startproject.git
+```
+
+Rename the `django-startproject` to `YOUR-PROJECT-NAME`
+
 # How to Start?
 - Install [Python 3.12+](https://www.python.org/)
 
