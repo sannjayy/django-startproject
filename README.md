@@ -13,7 +13,7 @@ git clone git@github.com:sannjayy/django-startproject.git
 
 Rename the `django-startproject` to `YOUR-PROJECT-NAME`
 
-# How to Start?
+# How to Setup?
 - Install [Python 3.12+](https://www.python.org/)
 
 - Clone or download [django-startproject](https://github.com/sannjayy/django-startproject) 
