@@ -4,24 +4,18 @@
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
 # Getting Started 
+- Install [Python 3.12+](https://www.python.org/)
 
-Clone the repo
+- Clone or download [django-startproject](https://github.com/sannjayy/django-startproject) 
 
 ```bash
 git clone git@github.com:sannjayy/django-startproject.git
 ```
 
 1. Rename the `django-startproject` to `YOUR-PROJECT-NAME`
-
 2. Rename the `YOUR-PROJECT-NAME/.env.Example` to `.env`
-
-# How to Setup?
-- Install [Python 3.12+](https://www.python.org/)
-
-- Clone or download [django-startproject](https://github.com/sannjayy/django-startproject) 
-
-`git clone git@github.com:sannjayy/django-startproject.git`
-
+3. Remove the existing "origin" remote: `git remote remove origin` & Add your new remote repository (Optional)
+   
 - Create a virtual environment
 ```bash
 python -m venv zenv
