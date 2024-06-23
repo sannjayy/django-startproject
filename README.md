@@ -11,7 +11,9 @@ Clone the repo
 git clone git@github.com:sannjayy/django-startproject.git
 ```
 
-Rename the `django-startproject` to `YOUR-PROJECT-NAME`
+1. Rename the `django-startproject` to `YOUR-PROJECT-NAME`
+
+2. Rename the `YOUR-PROJECT-NAME/.env.Example` to `.env`
 
 # How to Setup?
 - Install [Python 3.12+](https://www.python.org/)
