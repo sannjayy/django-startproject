@@ -49,4 +49,4 @@ if ENABLE_MONGO_ENGINE:
             # Connect to the MongoDB database using the updated connection string
             mongoengine.connect(host=fetch_mongo.get('uri'))
         except mongoengine.connection.ConnectionFailure as e:
-            print(f"Cannot connect to database {fetch_mongo.get('database_name')}: {e}")
+            raise ValueError(f"Cannot connect to database {fetch_mongo.get('database_name')}: {e}")
