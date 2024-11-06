@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group, AbstractBaseUser, PermissionsMixin
 from django.utils.crypto import get_random_string
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.text import slugify
+
+from accounts.options import GENDER_OPTIONS
 from .utils import random_code_generator
 from .manager import UserManager
 import os
@@ -22,35 +24,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     # Primary Fields
     full_name = models.CharField(max_length=150)
-    username = models.CharField(max_length=150, unique=True, null=True, validators=[username_validator],
+    username = models.CharField(max_length=150, null=True, validators=[username_validator],
         error_messages={
             "unique": "A user with that username already exists.",
         },
     )
-    email = models.EmailField(unique=True, null=True, blank=True, db_index=True)
+    email = models.EmailField(null=True, blank=True)
     is_email_verified = models.BooleanField(default=False)
-    mobile = PhoneNumberField(unique=True, null=True, blank=True, db_index=True, help_text="Mobile Number should start with +91 followed by 10 digits.")
+    mobile = PhoneNumberField(null=True, blank=True, help_text="Mobile Number should start with +91 followed by 10 digits.")
     is_mobile_verified = models.BooleanField(default=False)    
 
     # Counts
     counts =  models.JSONField(default=dict, null=True, blank=True)
-    referral_id = models.CharField(max_length=50, null=True, blank=True, unique=True, editable=False)
+    referral_id = models.CharField(max_length=50, null=True, blank=True, editable=False)
     referral_code = models.CharField(max_length=50, null=True, blank=True, help_text="Registration time used referral code.")
     
     # Information
-    GENDER_OPTIONS = (      
-      (None, 'Not specified'),         
-      ('male', 'Male'),         
-      ('female', 'Female'), 
-      ('others', 'Others')
-    )
-    gender = models.CharField(choices=GENDER_OPTIONS, default=None, max_length=10, null=True)
+    gender = models.CharField(choices=GENDER_OPTIONS, default=None, max_length=10, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     device_info =  models.JSONField(default=dict, null=True, blank=True)
 
     # Permissions
     is_staff = models.BooleanField(default=False, help_text="Designates whether the user can log into this admin site.")
     is_active = models.BooleanField(default=True, help_text="Unselect this instead of deleting accounts.")
+    is_deleted = models.BooleanField(default=False, help_text="Soft Delete User Account.")
 
     # Date Time
     updated_at = models.DateTimeField(auto_now=True)
@@ -63,7 +60,24 @@ class User(AbstractBaseUser, PermissionsMixin):
     # REQUIRED_FIELDS = ["password"]
 
     class Meta:
-        verbose_name = 'User Account'
+        verbose_name = 'User Account'   
+        ordering = ['-id']    
+        constraints = [
+            models.UniqueConstraint(fields=['username'], name='unique_username'),
+            models.UniqueConstraint(fields=['email'], name='unique_email'),
+            models.UniqueConstraint(fields=['mobile'], name='unique_mobile'),
+            models.UniqueConstraint(fields=['referral_id'], name='unique_referral_id'),
+        ]
+        indexes = [
+            models.Index(fields=['id'], name='id_idx'),
+            models.Index(fields=['mobile'], name='mobile_idx'),
+            models.Index(fields=['full_name'], name='full_name_idx'),
+            models.Index(fields=['email'], name='email_idx'),
+            models.Index(fields=['username'], name='username_idx'),
+            models.Index(fields=['is_active'], name='is_active_idx'),
+            models.Index(fields=['is_staff'], name='is_staff_idx'),
+            models.Index(fields=['is_deleted'], name='is_deleted_idx'),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.referral_id:
@@ -115,7 +129,7 @@ class Otp(models.Model):
         return self.user.username
 
     class Meta:
-        verbose_name = 'User Otp'
+        verbose_name = 'User OTP'
 
     def regenerate(self):
         self.code = get_random_string(6, allowed_chars="0123456789")
@@ -133,12 +147,14 @@ SOCIAL_LOGIN_PROVIDERS = (
 class SocialLogin(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='linked_accounts')
     provider = models.CharField(choices=SOCIAL_LOGIN_PROVIDERS, max_length=20, default='google')
-    token = models.CharField(max_length=255, unique=True)
+    token = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'provider', 'token')
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'provider', 'token'], name='unique_social_login'),
+        ]
     
     def __str__(self) -> str:
         return self.provider
@@ -156,4 +172,9 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"#{self.id} - {self.name}"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'name'], name='unique_user_profile'),
+        ]
 

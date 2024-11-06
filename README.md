@@ -1,10 +1,13 @@
-# django-startproject v1.0.1
+# django-startproject v1.1.1
+Ready with Django 5
+
+
 ![Demo](https://cdn.sanjaysikdar.dev/assets/django-startproject/demo-1.png)
 
 Set up a fresh Django project to build your large or small app, with everything configured to be controlled simply from environment variables. 
 
 # Getting Started 
-- Install [Python 3.12+](https://www.python.org/)
+- Install [Python 3.13](https://www.python.org/)
 
 - Clone or download [django-startproject](https://github.com/sannjayy/django-startproject) 
 

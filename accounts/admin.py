@@ -45,7 +45,7 @@ class UserAdmin(BaseUserAdmin, ImportExportModelAdmin):
     resource_class = UsersResource
     inlines = (UserProfileInline, UserOTPInline, SocialLoginInline)
     list_display = ('id', 'username', 'full_name', 'email', 'mobile', 'created_at', 'updated_at',)
-    list_filter = ('is_active', 'is_staff', 'is_superuser',)
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'is_deleted')
     readonly_fields = ('gender', 'date_of_birth', 'device_info', 'counts')
     list_display_links = ('full_name', 'id', 'username')
     fieldsets = (

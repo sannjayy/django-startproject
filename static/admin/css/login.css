@@ -10,7 +10,7 @@
 
 .login #header {
     height: auto;
-    padding: 27px 16px;
+    padding: 15px 16px;
     justify-content: center;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .login #content {
-    padding: 20px 20px 0;
+    padding: 20px;
 }
 
 .login #container {
