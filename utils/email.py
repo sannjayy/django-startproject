@@ -10,7 +10,10 @@ class EmailThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        self.email.send()
+        try:
+            self.email.send()
+        except Exception as e:
+            print('Error sending email: ', e)
 
 class EmailUtil:   
     @staticmethod
