@@ -40,5 +40,20 @@ def _handle_authentication_error(exc, context, response):
     return response
 
 
-def _handle_generic_error(exc, context, response):    
+def _handle_generic_error(exc, context, response):
+    if isinstance(exc, ValidationError):
+        # Access the `detail` attribute for structured error information
+        error_detail = exc.detail
+        if isinstance(error_detail, list) and len(error_detail) > 0 and isinstance(error_detail[0], ErrorDetail):
+            error_detail = str(error_detail[0])
+        else:
+            error_detail = str(error_detail)
+    else:
+        # For non-ValidationError exceptions, fallback to string
+        error_detail = str(exc)
+    
+    response.data = {
+        'success': response.status_code in [200, 201],
+        'detail': error_detail
+    }
     return response
